@@ -3,9 +3,11 @@ import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { A } from '@ember/array';
+import { namedNode } from 'rdflib';
 
 export default class IndexController extends Controller {
   @service store;
+  @service solidAuth;
 
   @tracked
   fields = A([]);
@@ -22,7 +24,20 @@ export default class IndexController extends Controller {
   }
 
   @action
-  sortEndAction(event) {
-    console.log('sortEndAction', this.fields);
+  async save(event) {
+    event.preventDefault();
+
+    this.fields.forEach((field, i) => {
+      field.order = i;
+      field.label = field.label.trim();
+      field.required = field.required || false;
+    });
+
+    await this.store.persist();
+  }
+
+  @action
+  updateBinding(field, event) {
+    field.binding = namedNode(event.target.value);
   }
 }

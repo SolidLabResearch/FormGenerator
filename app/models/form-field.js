@@ -6,18 +6,19 @@ import SemanticModel, {
   uri,
   hasMany,
 } from 'ember-solid/models/semantic-model';
+import { namedNode } from 'rdflib';
 
 @solid({
-  defaultStorageLocation: '/private/tests/my-forms.ttl', // default location in solid pod
+  defaultStorageLocation: 'private/tests/my-forms.ttl', // default location in solid pod
   private: true, // is this private info for the user?
   type: 'http://rdf.danielbeeke.nl/form/form-dev.ttl#Field',
   ns: 'http://rdf.danielbeeke.nl/form/form-dev.ttl#', // define a namespace for properties.
 })
 export default class FormField extends SemanticModel {
   @uri()
-  binding;
+  binding = namedNode('');
 
-  @string({ predicate: 'http://rdf.danielbeeke.nl/form/form-dev.ttl#widget'})
+  @string()
   widget;
 
   @string()

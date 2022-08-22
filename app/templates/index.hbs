@@ -31,7 +31,7 @@
       <div class="card">
         <div class="card-body">
           <h5 class="card-title">Your new form</h5>
-          <SortableObjects @sortableObjectList={{this.fields}} @sortEndAction={{fn this.sortEndAction}} @enableSort={{true}} @useSwap={{false}} @inPlace={{false}} @sortingScope={{"formFields"}}>
+          <SortableObjects @sortableObjectList={{this.fields}} @enableSort={{true}} @useSwap={{false}} @inPlace={{false}} @sortingScope={{"formFields"}}>
             {{#each this.fields as |field|}}
               <DraggableObject @content={{field}} @isSortable="{{true}}" @sortingScope={{"formFields"}}>
                 <div class="card" id="card-{{field.uri}}">
@@ -47,8 +47,8 @@
                     <div class="mb-3 row">
                       <label for="binding-{{field.uri}}" class="col-sm-3 col-form-label">Binding</label>
                       <div class="col-sm-9">
-                        <Input @type="text" class="form-control" id="binding-{{field.uri}}" placeholder="Binding" @value={{field.binding}}
-                               aria-describedby="binding" />
+                        <input type="text" class="form-control" id="binding-{{field.uri}}" placeholder="Binding" value={{field.binding.value}}
+                               {{ on "change" (fn this.updateBinding field) }} aria-describedby="binding" />
                       </div>
                     </div>
                     <div class="form-check">
@@ -68,6 +68,8 @@
               </div>
             </div>
           </DraggableObjectTarget>
+
+          <button type="button" class="btn btn-success" {{ on "click" this.save }}>Save</button>
         </div>
       </div>
     </div>

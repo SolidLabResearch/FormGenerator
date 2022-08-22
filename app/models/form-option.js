@@ -6,7 +6,7 @@ import SemanticModel, {
 } from 'ember-solid/models/semantic-model';
 
 @solid({
-  // defaultStorageLocation: "/private/tests/my-books.ttl", // default location in solid pod
+  defaultStorageLocation: 'private/tests/my-forms.ttl', // default location in solid pod
   private: true, // is this private info for the user?
   type: 'http://rdf.danielbeeke.nl/form/form-dev.ttl#Option',
   ns: 'http://rdf.danielbeeke.nl/form/form-dev.ttl#', // define a namespace for properties.
