@@ -6,6 +6,11 @@ module.exports = function (environment) {
     environment,
     rootURL: '/',
     locationType: 'history',
+    rdfStore: {
+      name: 'store',
+      enableDataAdapter: true, // Ember Inspector "Data" tab
+    },
+
     EmberENV: {
       FEATURES: {
         // Here you can enable experimental features on an ember canary build
