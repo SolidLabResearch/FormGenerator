@@ -6,8 +6,8 @@ module.exports = function (defaults) {
   let app = new EmberApp(defaults, {
     'ember-bootstrap': {
       bootstrapVersion: 5,
-      importBootstrapCSS: true
-    }
+      importBootstrapCSS: true,
+    },
   });
 
   // Use `app.import` to add additional libraries to the generated
