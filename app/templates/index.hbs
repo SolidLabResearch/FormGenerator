@@ -31,7 +31,8 @@
       <div class="card">
         <div class="card-body">
           <h5 class="card-title">Your new form</h5>
-          <SortableObjects @sortableObjectList={{this.fields}} @enableSort={{true}} @useSwap={{false}} @inPlace={{false}} @sortingScope={{"formFields"}}>
+          <SortableObjects @sortableObjectList={{this.fields}} @enableSort={{true}} @useSwap={{false}}
+                           @inPlace={{false}} @sortingScope={{"formFields"}}>
             {{#each this.fields as |field|}}
               <DraggableObject @content={{field}} @isSortable="{{true}}" @sortingScope={{"formFields"}}>
                 <div class="card" id="card-{{field.uri}}">
@@ -40,19 +41,22 @@
                     <div class="mb-3 row">
                       <label for="label-{{field.uri}}" class="col-sm-3 col-form-label">Label</label>
                       <div class="col-sm-9">
-                        <Input @type="text" class="form-control" id="label-{{field.uri}}" placeholder="Label" @value={{field.label}}
+                        <Input @type="text" class="form-control" id="label-{{field.uri}}" placeholder="Label"
+                               @value={{field.label}}
                                aria-describedby="label" />
                       </div>
                     </div>
                     <div class="mb-3 row">
                       <label for="binding-{{field.uri}}" class="col-sm-3 col-form-label">Binding</label>
                       <div class="col-sm-9">
-                        <input type="text" class="form-control" id="binding-{{field.uri}}" placeholder="Binding" value={{field.binding.value}}
-                               {{ on "change" (fn this.updateBinding field) }} aria-describedby="binding" />
+                        <input type="text" class="form-control" id="binding-{{field.uri}}" placeholder="Binding"
+                               value={{field.binding.value}}
+                          {{ on "change" (fn this.updateBinding field) }} aria-describedby="binding" />
                       </div>
                     </div>
                     <div class="form-check">
-                      <Input @type="checkbox" class="form-check-input" id="required-{{field.uri}}" name="required-{{field.uri}}" @checked={{field.required}} />
+                      <Input @type="checkbox" class="form-check-input" id="required-{{field.uri}}"
+                             name="required-{{field.uri}}" @checked={{field.required}} />
                       <label class="form-check-label" for="required-{{field.uri}}">Required</label>
                     </div>
                   </div>

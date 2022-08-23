@@ -1,9 +1,6 @@
 import SemanticModel, {
   solid,
   string,
-  integer,
-  hasMany,
-  belongsTo,
 } from 'ember-solid/models/semantic-model';
 
 @solid({

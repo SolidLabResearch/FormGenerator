@@ -20,8 +20,11 @@ export default class IndexRoute extends Route {
 
   configureStorageLocations() {
     const storageLocation = `private/tests/forms/${uuid()}.ttl`;
-    this.store.classForModel('form').solid.defaultStorageLocation = storageLocation;
-    this.store.classForModel('form-field').solid.defaultStorageLocation = storageLocation;
-    this.store.classForModel('form-option').solid.defaultStorageLocation = storageLocation;
+    this.store.classForModel('form').solid.defaultStorageLocation =
+      storageLocation;
+    this.store.classForModel('form-field').solid.defaultStorageLocation =
+      storageLocation;
+    this.store.classForModel('form-option').solid.defaultStorageLocation =
+      storageLocation;
   }
 }
