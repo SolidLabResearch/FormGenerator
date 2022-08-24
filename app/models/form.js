@@ -1,7 +1,9 @@
 import SemanticModel, {
   solid,
-  string,
+  uri,
+  belongsTo,
 } from 'ember-solid/models/semantic-model';
+import { namedNode } from 'rdflib';
 
 @solid({
   defaultStorageLocation: 'private/tests/my-forms.ttl', // default location in solid pod
@@ -10,6 +12,17 @@ import SemanticModel, {
   ns: 'http://rdf.danielbeeke.nl/form/form-dev.ttl#', // define a namespace for properties.
 })
 export default class Form extends SemanticModel {
-  @string({ predicate: 'http://www.w3.org/ns/hydra/core#endpoint' })
+  @uri({ predicate: 'http://www.w3.org/ns/hydra/core#endpoint' })
   endpoint;
+
+  @belongsTo({
+    model: 'hydra-class',
+    predicate: 'http://www.w3.org/ns/hydra/core#supportedClass',
+    inverse: false,
+    inverseProperty: 'method',
+  })
+  supportedClass;
+
+  @uri()
+  binding = namedNode('');
 }
