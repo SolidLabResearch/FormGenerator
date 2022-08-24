@@ -24,6 +24,13 @@
               </div>
             </div>
           </DraggableObject>
+          <DraggableObject @content={{"dropdown"}}>
+            <div class="card">
+              <div class="card-body">
+                Select Dropdown
+              </div>
+            </div>
+          </DraggableObject>
         </div>
       </div>
     </div>
@@ -31,6 +38,16 @@
       <div class="card">
         <div class="card-body">
           <h5 class="card-title">Your new form</h5>
+
+          <div class="mb-3 row">
+            <label for="binding-{{this.model.uri}}" class="col-sm-3 col-form-label">Binding</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="binding-{{this.model.uri}}" placeholder="Binding"
+                     value={{this.model.binding.value}}
+                {{ on "change" (fn this.updateBinding this.model) }} aria-describedby="binding" />
+            </div>
+          </div>
+
           <SortableObjects @sortableObjectList={{this.fields}} @enableSort={{true}} @useSwap={{false}}
                            @inPlace={{false}} @sortingScope={{"formFields"}}>
             {{#each this.fields as |field|}}
@@ -59,6 +76,33 @@
                              name="required-{{field.uri}}" @checked={{field.required}} />
                       <label class="form-check-label" for="required-{{field.uri}}">Required</label>
                     </div>
+                    {{#if field.isSelect}}
+                      <hr>
+                      <h6 class="card-subtitle mb-2 text-muted">Options</h6>
+                      <div class="mb-3 row">
+                        <div class="col-sm-10">
+                          {{#each field.options as |option|}}
+                            <div class="input-group mb-3">
+                              <Input @type="text" class="form-control" id="label-{{option.uri}}" placeholder="Label"
+                                     @value={{option.label}} aria-describedby="delete-{{option.uri}}" />
+                              <input type="text" class="form-control" id="binding-{{option.uri}}" placeholder="Binding"
+                                     value={{option.binding.value}} aria-describedby="delete-{{option.uri}}" {{ on
+                                "change" (fn this.updateBinding option) }} />
+                              <button class="btn btn-outline-danger" type="button" id="delete-{{option.uri}}" {{ on
+                                "click" (fn this.removeOption field option) }}>
+                                <FaIcon @icon="trash-can" />
+                              </button>
+                            </div>
+                          {{/each}}
+                        </div>
+                        <div class="col-sm-2">
+                          <button type="button" class="btn btn-outline-success" {{ on "click"
+                                                                                      (fn this.addOption field) }}>
+                            <FaIcon @icon="plus" />
+                          </button>
+                        </div>
+                      </div>
+                    {{/if}}
                   </div>
                 </div>
               </DraggableObject>
@@ -73,7 +117,7 @@
             </div>
           </DraggableObjectTarget>
 
-          <button type="button" class="btn btn-success" {{ on "click" this.save }}>Save</button>
+          <button type="button" class="btn btn-success btn-margin" {{ on "click" this.save }}>Save</button>
         </div>
       </div>
     </div>

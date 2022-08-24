@@ -19,6 +19,7 @@ export default class IndexController extends Controller {
       const field = this.store.create('form-field', {
         widget: type,
       });
+      field.isSelect = type === 'dropdown';
       this.fields = [...this.fields, field];
     }
   }
@@ -31,13 +32,36 @@ export default class IndexController extends Controller {
       field.order = i;
       field.label = field.label.trim();
       field.required = field.required || false;
+      field.options.forEach((option) => {
+        option.label = option.label.trim();
+      });
     });
 
     await this.store.persist();
   }
 
   @action
-  updateBinding(field, event) {
-    field.binding = namedNode(event.target.value);
+  updateBinding(element, event) {
+    element.binding = namedNode(event.target.value);
+  }
+
+  @action
+  addOption(field, event) {
+    event.preventDefault();
+    event.target.closest('.btn').disabled = true;
+
+    const option = this.store.create('form-option', {
+      field: field,
+    });
+    field.options = [...field.options, option];
+
+    event.target.closest('.btn').disabled = false;
+  }
+
+  @action
+  removeOption(field, option, event) {
+    event.preventDefault();
+    field.options = field.options.filter((o) => o.uuid !== option.uuid);
+    option.destroy();
   }
 }

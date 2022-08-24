@@ -33,8 +33,10 @@ export default class FormField extends SemanticModel {
   @hasMany({
     model: 'form-option',
     predicate: 'http://rdf.danielbeeke.nl/form/form-dev.ttl#option',
-    inverse: false,
-    inverseProperty: 'field',
+    rdfList: true,
   })
   options;
+
+  // Extra helper property used in template.
+  isSelect = false;
 }

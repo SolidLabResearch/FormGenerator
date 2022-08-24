@@ -1,9 +1,9 @@
 import SemanticModel, {
   solid,
   string,
-  belongsTo,
   uri,
 } from 'ember-solid/models/semantic-model';
+import { namedNode } from 'rdflib';
 
 @solid({
   defaultStorageLocation: 'private/tests/my-forms.ttl', // default location in solid pod
@@ -12,17 +12,9 @@ import SemanticModel, {
   ns: 'http://rdf.danielbeeke.nl/form/form-dev.ttl#', // define a namespace for properties.
 })
 export default class FormOption extends SemanticModel {
-  @uri()
-  value;
+  @uri({ predicate: 'http://rdf.danielbeeke.nl/form/form-dev.ttl#value' })
+  binding = namedNode('');
 
   @string()
   label;
-
-  @belongsTo({
-    model: 'form-field',
-    predicate: 'http://rdf.danielbeeke.nl/form/form-dev.ttl#option',
-    inverse: true,
-    inverseProperty: 'option',
-  })
-  field;
 }
