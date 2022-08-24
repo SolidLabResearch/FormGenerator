@@ -54,11 +54,11 @@
           <h5 class="card-title">Your new form</h5>
 
           <div class="mb-3 row">
-            <label for="binding-{{this.model.uri}}" class="col-sm-3 col-form-label">Binding</label>
+            <label for="binding-{{this.model.uuid}}" id="label-binding-{{this.model.uuid}}" class="col-sm-3 col-form-label">Binding</label>
             <div class="col-sm-9">
-              <input type="text" class="form-control" id="binding-{{this.model.uri}}" placeholder="Binding"
+              <input type="text" class="form-control" id="binding-{{this.model.uuid}}" placeholder="Binding"
                      value={{this.model.binding.value}}
-                {{ on "change" (fn this.updateBinding this.model) }} aria-describedby="binding" />
+                {{ on "change" (fn this.updateBinding this.model) }} aria-describedby="label-binding-{{this.model.uuid}}" />
             </div>
           </div>
 
@@ -66,39 +66,39 @@
                            @inPlace={{false}} @sortingScope={{"formFields"}}>
             {{#each this.fields as |field|}}
               <DraggableObject @content={{field}} @isSortable="{{true}}" @sortingScope={{"formFields"}}>
-                <div class="card" id="card-{{field.uri}}">
+                <div class="card" id="card-{{field.uuid}}">
                   <div class="card-body">
                     <h6 class="card-title">{{ field.widget }}</h6>
                     <div class="mb-3 row">
-                      <label for="label-{{field.uri}}" class="col-sm-3 col-form-label">Label</label>
+                      <label for="label-{{field.uuid}}" id="label-label-{{field.uuid}}" class="col-sm-3 col-form-label">Label</label>
                       <div class="col-sm-9">
-                        <Input @type="text" class="form-control" id="label-{{field.uri}}" placeholder="Label"
+                        <Input @type="text" class="form-control" id="label-{{field.uuid}}" placeholder="Label"
                                @value={{field.label}}
-                               aria-describedby="label" />
+                               aria-describedby="label-label-{{this.field.uuid}}" />
                       </div>
                     </div>
                     <div class="mb-3 row">
-                      <label for="binding-{{field.uri}}" class="col-sm-3 col-form-label">Binding</label>
+                      <label for="binding-{{field.uuid}}" id="label-binding-{{field.uuid}}" class="col-sm-3 col-form-label">Binding</label>
                       <div class="col-sm-9">
-                        <input type="text" class="form-control" id="binding-{{field.uri}}" placeholder="Binding"
+                        <input type="text" class="form-control" id="binding-{{field.uuid}}" placeholder="Binding"
                                value={{field.binding.value}}
-                          {{ on "change" (fn this.updateBinding field) }} aria-describedby="binding" />
+                          {{ on "change" (fn this.updateBinding field) }} aria-describedby="label-binding-{{this.field.uuid}}" />
                       </div>
                     </div>
                     {{#if field.canHavePlaceholder}}
                       <div class="mb-3 row">
-                        <label for="placeholder-{{field.uri}}" class="col-sm-3 col-form-label">Placeholder</label>
+                        <label for="placeholder-{{field.uuid}}" id="label-placeholder-{{field.uuid}}" class="col-sm-3 col-form-label">Placeholder</label>
                         <div class="col-sm-9">
-                          <Input @type="text" class="form-control" id="placeholder-{{field.uri}}" placeholder="Placeholder"
+                          <Input @type="text" class="form-control" id="placeholder-{{field.uuid}}" placeholder="Placeholder"
                                  @value={{field.placeholder}}
-                                 aria-describedby="placeholder" />
+                                 aria-describedby="label-placeholder-{{this.field.uuid}}" />
                         </div>
                       </div>
                     {{/if}}
                     <div class="form-check">
-                      <Input @type="checkbox" class="form-check-input" id="required-{{field.uri}}"
-                             name="required-{{field.uri}}" @checked={{field.required}} />
-                      <label class="form-check-label" for="required-{{field.uri}}">Required</label>
+                      <Input @type="checkbox" class="form-check-input" id="required-{{field.uuid}}"
+                             name="required-{{field.uuid}}" @checked={{field.required}} />
+                      <label class="form-check-label" for="required-{{field.uuid}}">Required</label>
                     </div>
                     {{#if field.isSelect}}
                       <hr>
@@ -107,12 +107,12 @@
                         <div class="col-sm-10">
                           {{#each field.options as |option|}}
                             <div class="input-group mb-3">
-                              <Input @type="text" class="form-control" id="label-{{option.uri}}" placeholder="Label"
-                                     @value={{option.label}} aria-describedby="delete-{{option.uri}}" />
-                              <input type="text" class="form-control" id="binding-{{option.uri}}" placeholder="Binding"
-                                     value={{option.binding.value}} aria-describedby="delete-{{option.uri}}" {{ on
+                              <Input @type="text" class="form-control" id="label-{{option.uuid}}" placeholder="Label"
+                                     @value={{option.label}} aria-describedby="delete-{{option.uuid}}" />
+                              <input type="text" class="form-control" id="binding-{{option.uuid}}" placeholder="Binding"
+                                     value={{option.binding.value}} aria-describedby="delete-{{option.uuid}}" {{ on
                                 "change" (fn this.updateBinding option) }} />
-                              <button class="btn btn-outline-danger" type="button" id="delete-{{option.uri}}" {{ on
+                              <button class="btn btn-outline-danger" type="button" id="delete-{{option.uuid}}" {{ on
                                 "click" (fn this.removeOption field option) }}>
                                 <FaIcon @icon="trash-can" />
                               </button>
