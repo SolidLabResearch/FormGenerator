@@ -100,6 +100,11 @@
                              name="required-{{field.uuid}}" @checked={{field.required}} />
                       <label class="form-check-label" for="required-{{field.uuid}}">Required</label>
                     </div>
+                    <div class="form-check">
+                      <Input @type="checkbox" class="form-check-input" id="multiple-{{field.uuid}}"
+                             name="multiple-{{field.uuid}}" @checked={{field.multiple}} />
+                      <label class="form-check-label" for="multiple-{{field.uuid}}">Allow multiple</label>
+                    </div>
                     {{#if field.isSelect}}
                       <hr>
                       <h6 class="card-subtitle mb-2 text-muted">Options</h6>

@@ -40,6 +40,9 @@ export default class FormField extends SemanticModel {
   @string()
   placeholder;
 
+  @boolean()
+  multiple;
+
   // Extra helper properties used in template.
   isSelect = false;
   canHavePlaceholder = false;

@@ -33,6 +33,7 @@ export default class IndexController extends Controller {
       field.order = i;
       field.label = field.label.trim();
       field.required = field.required || false;
+      field.multiple = field.multiple || false;
       field.options.forEach((option) => {
         option.label = option.label.trim();
       });
