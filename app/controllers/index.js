@@ -69,4 +69,19 @@ export default class IndexController extends Controller {
     field.options = field.options.filter((o) => o.uuid !== option.uuid);
     option.destroy();
   }
+
+  @action
+  removeField(field, event) {
+    event.preventDefault();
+
+    // Remove all the options of the field if it is a select.
+    if (field.isSelect) {
+      field.options.forEach((option) => {
+        option.destroy();
+      });
+      field.options.clear();
+    }
+    this.fields = this.fields.filter((f) => f.uuid !== field.uuid);
+    field.destroy();
+  }
 }

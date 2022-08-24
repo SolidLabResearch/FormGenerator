@@ -13,35 +13,40 @@
           <DraggableObject @content={{"string"}}>
             <div class="card">
               <div class="card-body">
-                <FaIcon @icon="font" /> Input String
+                <FaIcon @icon="font" />
+                Input String
               </div>
             </div>
           </DraggableObject>
           <DraggableObject @content={{"textarea"}}>
             <div class="card">
               <div class="card-body">
-                <FaIcon @icon="text-height" /> Textarea
+                <FaIcon @icon="text-height" />
+                Textarea
               </div>
             </div>
           </DraggableObject>
           <DraggableObject @content={{"dropdown"}}>
             <div class="card">
               <div class="card-body">
-                <FaIcon @icon="filter" /> Select Dropdown
+                <FaIcon @icon="filter" />
+                Select Dropdown
               </div>
             </div>
           </DraggableObject>
           <DraggableObject @content={{"date"}}>
             <div class="card">
               <div class="card-body">
-                <FaIcon @icon="calendar-alt" /> Date
+                <FaIcon @icon="calendar-alt" />
+                Date
               </div>
             </div>
           </DraggableObject>
           <DraggableObject @content={{"checkbox"}}>
             <div class="card">
               <div class="card-body">
-                <FaIcon @icon="check-circle" /> Checkbox
+                <FaIcon @icon="check-circle" />
+                Checkbox
               </div>
             </div>
           </DraggableObject>
@@ -54,11 +59,13 @@
           <h5 class="card-title">Your new form</h5>
 
           <div class="mb-3 row">
-            <label for="binding-{{this.model.uuid}}" id="label-binding-{{this.model.uuid}}" class="col-sm-3 col-form-label">Binding</label>
+            <label for="binding-{{this.model.uuid}}" id="label-binding-{{this.model.uuid}}"
+                   class="col-sm-3 col-form-label">Binding</label>
             <div class="col-sm-9">
               <input type="text" class="form-control" id="binding-{{this.model.uuid}}" placeholder="Binding"
                      value={{this.model.binding.value}}
-                {{ on "change" (fn this.updateBinding this.model) }} aria-describedby="label-binding-{{this.model.uuid}}" />
+                {{ on "change" (fn this.updateBinding this.model) }}
+                     aria-describedby="label-binding-{{this.model.uuid}}" />
             </div>
           </div>
 
@@ -68,7 +75,15 @@
               <DraggableObject @content={{field}} @isSortable="{{true}}" @sortingScope={{"formFields"}}>
                 <div class="card" id="card-{{field.uuid}}">
                   <div class="card-body">
-                    <h6 class="card-title">{{ field.widget }}</h6>
+                    <div class="d-flex align-items-center field-title">
+                      <h6 class="card-title">{{ field.widget }}</h6>
+                      <div class="d-flex ms-auto">
+                        <button type="button" class="btn btn-outline-danger" {{on "click"
+                                                                                  (fn this.removeField field)}}>
+                          <FaIcon @icon="trash-can" />
+                        </button>
+                      </div>
+                    </div>
                     <div class="mb-3 row">
                       <label for="label-{{field.uuid}}" id="label-label-{{field.uuid}}" class="col-sm-3 col-form-label">Label</label>
                       <div class="col-sm-9">
@@ -78,18 +93,22 @@
                       </div>
                     </div>
                     <div class="mb-3 row">
-                      <label for="binding-{{field.uuid}}" id="label-binding-{{field.uuid}}" class="col-sm-3 col-form-label">Binding</label>
+                      <label for="binding-{{field.uuid}}" id="label-binding-{{field.uuid}}"
+                             class="col-sm-3 col-form-label">Binding</label>
                       <div class="col-sm-9">
                         <input type="text" class="form-control" id="binding-{{field.uuid}}" placeholder="Binding"
                                value={{field.binding.value}}
-                          {{ on "change" (fn this.updateBinding field) }} aria-describedby="label-binding-{{this.field.uuid}}" />
+                          {{ on "change" (fn this.updateBinding field) }}
+                               aria-describedby="label-binding-{{this.field.uuid}}" />
                       </div>
                     </div>
                     {{#if field.canHavePlaceholder}}
                       <div class="mb-3 row">
-                        <label for="placeholder-{{field.uuid}}" id="label-placeholder-{{field.uuid}}" class="col-sm-3 col-form-label">Placeholder</label>
+                        <label for="placeholder-{{field.uuid}}" id="label-placeholder-{{field.uuid}}"
+                               class="col-sm-3 col-form-label">Placeholder</label>
                         <div class="col-sm-9">
-                          <Input @type="text" class="form-control" id="placeholder-{{field.uuid}}" placeholder="Placeholder"
+                          <Input @type="text" class="form-control" id="placeholder-{{field.uuid}}"
+                                 placeholder="Placeholder"
                                  @value={{field.placeholder}}
                                  aria-describedby="label-placeholder-{{this.field.uuid}}" />
                         </div>
