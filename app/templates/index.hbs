@@ -85,6 +85,16 @@
                           {{ on "change" (fn this.updateBinding field) }} aria-describedby="binding" />
                       </div>
                     </div>
+                    {{#if field.canHavePlaceholder}}
+                      <div class="mb-3 row">
+                        <label for="placeholder-{{field.uri}}" class="col-sm-3 col-form-label">Placeholder</label>
+                        <div class="col-sm-9">
+                          <Input @type="text" class="form-control" id="placeholder-{{field.uri}}" placeholder="Placeholder"
+                                 @value={{field.placeholder}}
+                                 aria-describedby="placeholder" />
+                        </div>
+                      </div>
+                    {{/if}}
                     <div class="form-check">
                       <Input @type="checkbox" class="form-check-input" id="required-{{field.uri}}"
                              name="required-{{field.uri}}" @checked={{field.required}} />

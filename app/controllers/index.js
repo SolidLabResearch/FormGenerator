@@ -20,6 +20,7 @@ export default class IndexController extends Controller {
         widget: type,
       });
       field.isSelect = type === 'dropdown';
+      field.canHavePlaceholder = type === 'string' || type === 'textarea';
       this.fields = [...this.fields, field];
     }
   }
@@ -35,6 +36,9 @@ export default class IndexController extends Controller {
       field.options.forEach((option) => {
         option.label = option.label.trim();
       });
+      if (field.canHavePlaceholder && field.placeholder) {
+        field.placeholder = field.placeholder?.trim();
+      }
     });
 
     await this.store.persist();
