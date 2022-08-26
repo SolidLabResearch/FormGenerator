@@ -6,11 +6,19 @@ import { A } from '@ember/array';
 import { namedNode } from 'rdflib';
 
 export default class IndexController extends Controller {
+  queryParams = ['form'];
+
   @service store;
   @service solidAuth;
 
   @tracked
-  fields = A([]);
+  fields = (() => {
+    const fields = A(this.store.all('form-field').sortBy('order'));
+    fields.forEach((field) => {
+      field.isSelect = field.widget === 'dropdown';
+    });
+    return fields;
+  })();
 
   @action
   addFormElement(type) {
@@ -34,9 +42,12 @@ export default class IndexController extends Controller {
       field.label = field.label.trim();
       field.required = field.required || false;
       field.multiple = field.multiple || false;
-      field.options.forEach((option) => {
-        option.label = option.label.trim();
-      });
+      if (field.isSelect) {
+        field.options = [...field.options];
+        field.options.forEach((option) => {
+          option.label = option.label.trim();
+        });
+      }
       if (field.canHavePlaceholder && field.placeholder) {
         field.placeholder = field.placeholder?.trim();
       }
