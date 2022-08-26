@@ -23,8 +23,7 @@ export default class IndexController extends Controller {
   @action
   addFormElement(type) {
     if (type) {
-      console.log('addFormElement', type);
-      const field = this.store.create('form-field', {
+      const field = this.store.create('rdf-form-field', {
         widget: type,
       });
       field.isSelect = type === 'dropdown';
@@ -66,7 +65,7 @@ export default class IndexController extends Controller {
     event.preventDefault();
     event.target.closest('.btn').disabled = true;
 
-    const option = this.store.create('form-option', {
+    const option = this.store.create('rdf-form-option', {
       field: field,
     });
     field.options = [...field.options, option];

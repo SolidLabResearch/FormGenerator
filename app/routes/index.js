@@ -23,9 +23,9 @@ export default class IndexRoute extends Route {
     this.configureStorageLocations(form);
 
     await this.store.fetchGraphForType('hydra-class');
-    await this.store.fetchGraphForType('form');
-    await this.store.fetchGraphForType('form-field');
-    await this.store.fetchGraphForType('form-option');
+    await this.store.fetchGraphForType('rdf-form');
+    await this.store.fetchGraphForType('rdf-form-field');
+    await this.store.fetchGraphForType('rdf-form-option');
 
     if (form) {
       this.loadForm();
@@ -39,11 +39,11 @@ export default class IndexRoute extends Route {
     const storageLocation = form ? form : `private/tests/forms/${uuid()}.ttl`;
     this.store.classForModel('hydra-class').solid.defaultStorageLocation =
       storageLocation;
-    this.store.classForModel('form').solid.defaultStorageLocation =
+    this.store.classForModel('rdf-form').solid.defaultStorageLocation =
       storageLocation;
-    this.store.classForModel('form-field').solid.defaultStorageLocation =
+    this.store.classForModel('rdf-form-field').solid.defaultStorageLocation =
       storageLocation;
-    this.store.classForModel('form-option').solid.defaultStorageLocation =
+    this.store.classForModel('rdf-form-option').solid.defaultStorageLocation =
       storageLocation;
   }
 
@@ -51,7 +51,7 @@ export default class IndexRoute extends Route {
     this.supportedClass = this.store.create('hydra-class', {
       method: 'POST',
     });
-    this.form = this.store.create('form', {
+    this.form = this.store.create('rdf-form', {
       endpoint: namedNode('https://httpbin.org/post'),
       supportedClass: this.supportedClass,
     });
@@ -59,7 +59,7 @@ export default class IndexRoute extends Route {
 
   loadForm() {
     this.supportedClass = this.store.all('hydra-class')[0];
-    this.form = this.store.all('form')[0];
+    this.form = this.store.all('rdf-form')[0];
     console.log('loaded form', this.form);
     console.log('loaded supportedClass', this.supportedClass);
   }

@@ -1,7 +1,6 @@
 import SemanticModel, {
   solid,
   string,
-  belongsTo,
 } from 'ember-solid/models/semantic-model';
 
 @solid({
@@ -13,12 +12,4 @@ import SemanticModel, {
 export default class HydraClass extends SemanticModel {
   @string()
   method;
-
-  @belongsTo({
-    model: 'form',
-    predicate: 'http://www.w3.org/ns/hydra/core#supportedClass',
-    inverse: true,
-    inverseProperty: 'supportedClass',
-  })
-  form;
 }

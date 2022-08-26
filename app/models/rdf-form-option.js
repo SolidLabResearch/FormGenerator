@@ -11,7 +11,7 @@ import { namedNode } from 'rdflib';
   type: 'http://rdf.danielbeeke.nl/form/form-dev.ttl#Option',
   ns: 'http://rdf.danielbeeke.nl/form/form-dev.ttl#', // define a namespace for properties.
 })
-export default class FormOption extends SemanticModel {
+export default class RdfFormOption extends SemanticModel {
   @uri({ predicate: 'http://rdf.danielbeeke.nl/form/form-dev.ttl#value' })
   binding = namedNode('');
 

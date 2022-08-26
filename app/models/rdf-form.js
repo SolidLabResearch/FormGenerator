@@ -11,7 +11,7 @@ import { namedNode } from 'rdflib';
   type: 'http://rdf.danielbeeke.nl/form/form-dev.ttl#Form',
   ns: 'http://rdf.danielbeeke.nl/form/form-dev.ttl#', // define a namespace for properties.
 })
-export default class Form extends SemanticModel {
+export default class RdfForm extends SemanticModel {
   @uri({ predicate: 'http://www.w3.org/ns/hydra/core#endpoint' })
   endpoint;
 
@@ -19,7 +19,6 @@ export default class Form extends SemanticModel {
     model: 'hydra-class',
     predicate: 'http://www.w3.org/ns/hydra/core#supportedClass',
     inverse: false,
-    inverseProperty: 'method',
   })
   supportedClass;
 
