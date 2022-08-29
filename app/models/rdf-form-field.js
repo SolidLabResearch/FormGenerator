@@ -34,6 +34,7 @@ export default class RdfFormField extends SemanticModel {
     model: 'rdf-form-option',
     predicate: 'http://rdf.danielbeeke.nl/form/form-dev.ttl#option',
     rdfList: true,
+    noBlankNodes: true,
   })
   options;
 

@@ -2,6 +2,7 @@ import Route from '@ember/routing/route';
 import { inject as service } from '@ember/service';
 import { v4 as uuid } from 'uuid';
 import { namedNode } from 'rdflib';
+import { tracked } from '@glimmer/tracking';
 
 export default class IndexRoute extends Route {
   queryParams = {
@@ -14,7 +15,7 @@ export default class IndexRoute extends Route {
   @service store;
 
   supportedClass;
-  form;
+  @tracked form;
 
   async model({ form }) {
     await this.solidAuth.ensureLogin();
@@ -26,13 +27,17 @@ export default class IndexRoute extends Route {
     await this.store.fetchGraphForType('rdf-form');
     await this.store.fetchGraphForType('rdf-form-field');
     await this.store.fetchGraphForType('rdf-form-option');
+    await this.store.fetchGraphForType('ui-form');
+    await this.store.fetchGraphForType('ui-form-field');
+    await this.store.fetchGraphForType('ui-form-option');
+    await this.store.fetchGraphForType('ui-form-choice');
 
     if (form) {
       this.loadForm();
     } else {
-      this.initiateNewForm();
+      this.initiateNewRdfForm();
     }
-    return this.form;
+    return this;
   }
 
   configureStorageLocations(form) {
@@ -45,15 +50,29 @@ export default class IndexRoute extends Route {
       storageLocation;
     this.store.classForModel('rdf-form-option').solid.defaultStorageLocation =
       storageLocation;
+    this.store.classForModel('ui-form').solid.defaultStorageLocation =
+      storageLocation;
+    this.store.classForModel('ui-form-field').solid.defaultStorageLocation =
+      storageLocation;
+    this.store.classForModel('ui-form-option').solid.defaultStorageLocation =
+      storageLocation;
+    this.store.classForModel('ui-form-choice').solid.defaultStorageLocation =
+      storageLocation;
   }
 
-  initiateNewForm() {
+  initiateNewRdfForm() {
     this.supportedClass = this.store.create('hydra-class', {
       method: 'POST',
     });
     this.form = this.store.create('rdf-form', {
       endpoint: namedNode('https://httpbin.org/post'),
       supportedClass: this.supportedClass,
+    });
+  }
+
+  initiateNewSolidUiForm(fields) {
+    this.form = this.store.create('ui-form', {
+      fields: fields,
     });
   }
 

@@ -1,6 +1,14 @@
 {{page-title "Index"}}
 <div class="container margin-bottom">
-  <h1>Form Generator</h1>
+  <div class="d-flex align-items-center margin-top">
+    <h1>Form Generator</h1>
+    <div class="d-flex ms-auto">
+      <select class="form-select" id="vocabulary" aria-label="Vocabulary" {{on "change" this.changeVocabulary}}>
+        <option value="http://rdf.danielbeeke.nl/form/form-dev.ttl#" selected>RDF-Form</option>
+        <option value="http://www.w3.org/ns/ui#">Solid-UI</option>
+      </select>
+    </div>
+  </div>
 
   <div class="row">
     <div class="col-md-4">
@@ -60,13 +68,13 @@
           <h6 class="card-subtitle mb-2 text-muted">Drag and drop the form fields in this area to reorder them</h6>
 
           <div class="mb-3 row">
-            <label for="binding-{{this.model.uuid}}" id="label-binding-{{this.model.uuid}}"
+            <label for="binding-{{this.model.form.uuid}}" id="label-binding-{{this.model.form.uuid}}"
                    class="col-sm-3 col-form-label">Binding</label>
             <div class="col-sm-9">
-              <input type="text" class="form-control" id="binding-{{this.model.uuid}}" placeholder="Binding"
-                     value={{this.model.binding.value}}
-                {{ on "change" (fn this.updateBinding this.model) }}
-                     aria-describedby="label-binding-{{this.model.uuid}}" />
+              <input type="text" class="form-control" id="binding-{{this.model.form.uuid}}" placeholder="Binding"
+                     value={{this.model.form.binding.value}}
+                {{ on "change" (fn this.updateBinding this.model.form) }}
+                     aria-describedby="label-binding-{{this.model.form.uuid}}" />
             </div>
           </div>
 
@@ -126,6 +134,19 @@
                       <label class="form-check-label" for="multiple-{{field.uuid}}">Allow multiple</label>
                     </div>
                     {{#if field.isSelect}}
+                      {{#if field.canHaveChoiceBinding}}
+                        <hr>
+                        <div class="mb-3 row">
+                          <label for="choice-binding-{{field.uuid}}" id="choice-label-binding-{{field.uuid}}"
+                                 class="col-sm-3 col-form-label">Choice Binding</label>
+                          <div class="col-sm-9">
+                            <input type="text" class="form-control" id="choice-binding-{{field.uuid}}" placeholder="Choice Binding"
+                                   value={{field.choice.uri.value}}
+                              {{ on "change" (fn this.updateChoiceBinding field) }}
+                                   aria-describedby="choice-label-binding-{{this.field.uuid}}" />
+                          </div>
+                        </div>
+                      {{/if}}
                       <hr>
                       <h6 class="card-subtitle mb-2 text-muted">Options</h6>
                       <div class="mb-3 row">
