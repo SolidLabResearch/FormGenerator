@@ -11,12 +11,17 @@ export default class IndexController extends Controller {
   @service store;
   @service solidAuth;
 
-  vocabulary = 'http://rdf.danielbeeke.nl/form/form-dev.ttl#';
+  @tracked isRdfFormVocabulary =
+    this.model.vocabulary === 'http://rdf.danielbeeke.nl/form/form-dev.ttl#';
+  @tracked isSolidUiVocabulary =
+    this.model.vocabulary === 'http://www.w3.org/ns/ui#';
 
   @tracked
   fields = (() => {
     let fields;
-    if (this.vocabulary === 'http://rdf.danielbeeke.nl/form/form-dev.ttl#') {
+    if (
+      this.model.vocabulary === 'http://rdf.danielbeeke.nl/form/form-dev.ttl#'
+    ) {
       fields = A(this.store.all('rdf-form-field').sortBy('order'));
       fields.forEach((field) => {
         field.isSelect = field.widget === 'dropdown';
@@ -25,14 +30,34 @@ export default class IndexController extends Controller {
             'http://rdf.danielbeeke.nl/form/form-dev.ttl#Field' &&
           (field.widget === 'string' || field.widget === 'textarea');
       });
-    } else if (this.vocabulary === 'http://www.w3.org/ns/ui#') {
-      fields = A(this.store.all('ui-form-field').sortBy('order'));
+    } else if (this.model.vocabulary === 'http://www.w3.org/ns/ui#') {
+      fields = A([
+        ...this.store.all('ui-form-field', {
+          rdfType: namedNode('http://www.w3.org/ns/ui#SingleLineTextField'),
+        }),
+        ...this.store.all('ui-form-field', {
+          rdfType: namedNode('http://www.w3.org/ns/ui#MultiLineTextField'),
+        }),
+        ...this.store.all('ui-form-field', {
+          rdfType: namedNode('http://www.w3.org/ns/ui#Choice'),
+        }),
+        ...this.store.all('ui-form-field', {
+          rdfType: namedNode('http://www.w3.org/ns/ui#DateField'),
+        }),
+        ...this.store.all('ui-form-field', {
+          rdfType: namedNode('http://www.w3.org/ns/ui#BooleanField'),
+        }),
+      ]).sortBy('order');
       fields.forEach((field) => {
+        field.widget = this.getWidgetTypeFromSolidUiRdfType(field.rdfType);
         field.isSelect =
           field.rdfType.value === 'http://www.w3.org/ns/ui#Choice';
-        field.options = this.store
-          .all('ui-form-option')
-          .filter((option) => option.rdfType.value === field.choice.uri.value);
+        field.options = this.store.all('ui-form-option', {
+          rdfType: field.choice?.uri,
+        });
+        field.options.forEach((option) => {
+          option.binding = option.uri;
+        });
       });
     }
     return fields;
@@ -41,14 +66,16 @@ export default class IndexController extends Controller {
   @action
   addFormElement(type) {
     if (type) {
-      if (this.vocabulary === 'http://rdf.danielbeeke.nl/form/form-dev.ttl#') {
+      if (
+        this.model.vocabulary === 'http://rdf.danielbeeke.nl/form/form-dev.ttl#'
+      ) {
         const field = this.store.create('rdf-form-field', {
           widget: type,
         });
         field.isSelect = type === 'dropdown';
         field.canHavePlaceholder = type === 'string' || type === 'textarea';
         this.fields = [...this.fields, field];
-      } else if (this.vocabulary === 'http://www.w3.org/ns/ui#') {
+      } else if (this.model.vocabulary === 'http://www.w3.org/ns/ui#') {
         const field = this.store.create('ui-form-field', {});
         field.setRdfType(this.getSolidUiRdfTypeFromWidgetType(type));
         field.widget = type;
@@ -71,7 +98,9 @@ export default class IndexController extends Controller {
       field.order = i;
       field.label = field.label.trim();
       field.required = field.required || false;
-      if (this.vocabulary === 'http://rdf.danielbeeke.nl/form/form-dev.ttl#') {
+      if (
+        this.model.vocabulary === 'http://rdf.danielbeeke.nl/form/form-dev.ttl#'
+      ) {
         field.multiple = field.multiple || false;
       }
       if (field.isSelect) {
@@ -111,10 +140,12 @@ export default class IndexController extends Controller {
     event.preventDefault();
     event.target.closest('.btn').disabled = true;
 
-    if (this.vocabulary === 'http://rdf.danielbeeke.nl/form/form-dev.ttl#') {
+    if (
+      this.model.vocabulary === 'http://rdf.danielbeeke.nl/form/form-dev.ttl#'
+    ) {
       const option = this.store.create('rdf-form-option', {});
       field.options = [...field.options, option];
-    } else if (this.vocabulary === 'http://www.w3.org/ns/ui#') {
+    } else if (this.model.vocabulary === 'http://www.w3.org/ns/ui#') {
       const option = this.store.create('ui-form-option', {});
       option.setRdfType(field.choice.uri);
       field.options = [...field.options, option];
@@ -141,7 +172,7 @@ export default class IndexController extends Controller {
       });
       field.options.clear();
 
-      if (this.vocabulary === 'http://www.w3.org/ns/ui#') {
+      if (this.model.vocabulary === 'http://www.w3.org/ns/ui#') {
         field.choice.destroy();
       }
     }
@@ -161,16 +192,21 @@ export default class IndexController extends Controller {
     this.model.supportedClass?.destroy();
 
     // Update the vocabulary.
-    this.vocabulary = event.target.value;
+    this.model.vocabulary = event.target.value;
 
     // Create new form.
-    if (this.vocabulary === 'http://rdf.danielbeeke.nl/form/form-dev.ttl#') {
+    if (
+      this.model.vocabulary === 'http://rdf.danielbeeke.nl/form/form-dev.ttl#'
+    ) {
       this.model.initiateNewRdfForm();
-    } else if (this.vocabulary === 'http://www.w3.org/ns/ui#') {
+    } else if (this.model.vocabulary === 'http://www.w3.org/ns/ui#') {
       this.model.initiateNewSolidUiForm(this.fields);
     }
 
-    console.log('changeVocabulary', this.vocabulary);
+    this.isRdfFormVocabulary =
+      this.model.vocabulary === 'http://rdf.danielbeeke.nl/form/form-dev.ttl#';
+    this.isSolidUiVocabulary =
+      this.model.vocabulary === 'http://www.w3.org/ns/ui#';
   }
 
   getSolidUiRdfTypeFromWidgetType(type) {
@@ -184,6 +220,22 @@ export default class IndexController extends Controller {
       return namedNode('http://www.w3.org/ns/ui#DateField');
     } else if (type === 'checkbox') {
       return namedNode('http://www.w3.org/ns/ui#BooleanField');
+    } else {
+      return null;
+    }
+  }
+
+  getWidgetTypeFromSolidUiRdfType(type) {
+    if (type.value === 'http://www.w3.org/ns/ui#SingleLineTextField') {
+      return 'string';
+    } else if (type.value === 'http://www.w3.org/ns/ui#MultiLineTextField') {
+      return 'textarea';
+    } else if (type.value === 'http://www.w3.org/ns/ui#Choice') {
+      return 'dropdown';
+    } else if (type.value === 'http://www.w3.org/ns/ui#DateField') {
+      return 'date';
+    } else if (type.value === 'http://www.w3.org/ns/ui#BooleanField') {
+      return 'checkbox';
     } else {
       return null;
     }

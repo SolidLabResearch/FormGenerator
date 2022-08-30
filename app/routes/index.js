@@ -17,6 +17,8 @@ export default class IndexRoute extends Route {
   supportedClass;
   @tracked form;
 
+  @tracked vocabulary = 'http://rdf.danielbeeke.nl/form/form-dev.ttl#';
+
   async model({ form }) {
     await this.solidAuth.ensureLogin();
 
@@ -77,8 +79,14 @@ export default class IndexRoute extends Route {
   }
 
   loadForm() {
+    // Try rdf-form vocabulary first.
     this.supportedClass = this.store.all('hydra-class')[0];
     this.form = this.store.all('rdf-form')[0];
+    if (this.form === undefined) {
+      // Try solid-ui vocabulary.
+      this.form = this.store.all('ui-form')[0];
+      this.vocabulary = 'http://www.w3.org/ns/ui#';
+    }
     console.log('loaded form', this.form);
     console.log('loaded supportedClass', this.supportedClass);
   }

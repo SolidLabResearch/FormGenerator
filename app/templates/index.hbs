@@ -4,8 +4,8 @@
     <h1>Form Generator</h1>
     <div class="d-flex ms-auto">
       <select class="form-select" id="vocabulary" aria-label="Vocabulary" {{on "change" this.changeVocabulary}}>
-        <option value="http://rdf.danielbeeke.nl/form/form-dev.ttl#" selected>RDF-Form</option>
-        <option value="http://www.w3.org/ns/ui#">Solid-UI</option>
+        <option value="http://rdf.danielbeeke.nl/form/form-dev.ttl#" selected={{if this.isRdfFormVocabulary true false}}>RDF-Form</option>
+        <option value="http://www.w3.org/ns/ui#" selected={{if this.isSolidUiVocabulary true false}}>Solid-UI</option>
       </select>
     </div>
   </div>
