@@ -35,6 +35,9 @@ export default class UiFormField extends SemanticModel {
   @boolean()
   required;
 
+  @boolean()
+  multiple;
+
   // Extra helper properties used in template and/or for compatibility with other vocabularies.
   isSelect = false;
   canHavePlaceholder = false;

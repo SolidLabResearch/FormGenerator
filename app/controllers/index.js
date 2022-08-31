@@ -105,13 +105,13 @@ export default class IndexController extends Controller {
 
     this.fields.forEach((field, i) => {
       field.order = i;
+
+      // Ugly reassignments to fix the bug where property was not written back as it was only assigned using binding.
       field.label = field.label.trim();
-      field.required = field.required || false;
-      if (
-        this.model.vocabulary === 'http://rdf.danielbeeke.nl/form/form-dev.ttl#'
-      ) {
-        field.multiple = field.multiple || false;
-      }
+      field.required = !field.required;
+      field.required = !field.required;
+      field.multiple = !field.multiple;
+      field.multiple = !field.multiple;
       if (field.isSelect) {
         field.options = [...field.options];
         field.options.forEach((option) => {
