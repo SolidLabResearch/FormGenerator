@@ -17,6 +17,8 @@ export default class IndexRoute extends Route {
   supportedClass;
   @tracked form;
 
+  loadedFormUri;
+
   @tracked vocabulary = 'http://rdf.danielbeeke.nl/form/form-dev.ttl#';
 
   async model({ form }) {
@@ -37,6 +39,7 @@ export default class IndexRoute extends Route {
 
   configureStorageLocations(form) {
     const storageLocation = form ? form : `private/tests/forms/${uuid()}.ttl`;
+    this.loadedFormUri = storageLocation;
     this.store.classForModel('hydra-class').solid.defaultStorageLocation =
       storageLocation;
     this.store.classForModel('rdf-form').solid.defaultStorageLocation =

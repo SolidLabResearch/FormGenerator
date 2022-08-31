@@ -13,6 +13,15 @@
     </div>
   </div>
 
+  <form {{ on "submit" this.loadForm }} class="margin-top">
+    <div class="input-group">
+      <button class="btn btn-outline-success" type="submit" id="load-btn">Load</button>
+      <Input @type="text" class="form-control" id="uri" placeholder="Load from URI"
+             @value={{this.model.loadedFormUri}} aria-describedby="load" />
+    </div>
+    <small id="load" class="form-text text-muted">When loading a form resource, any changes will be discarded and the given URI will be loaded.</small>
+  </form>
+
   {{#if this.success}}
     <div class="alert alert-success alert-dismissible margin-top">
       {{this.success}}

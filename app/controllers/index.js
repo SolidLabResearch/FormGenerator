@@ -8,6 +8,8 @@ import { namedNode } from 'rdflib';
 export default class IndexController extends Controller {
   queryParams = ['form'];
 
+  @tracked form = null;
+
   @service store;
   @service solidAuth;
 
@@ -257,5 +259,17 @@ export default class IndexController extends Controller {
   @action
   clearSuccess() {
     this.success = null;
+  }
+
+  @action
+  loadForm(event) {
+    event.preventDefault();
+    document.getElementById('load-btn').disabled = true;
+    document.getElementById('load-btn').innerText = 'Loading...';
+
+    this.form = this.model.loadedFormUri;
+
+    document.getElementById('load-btn').disabled = false;
+    document.getElementById('load-btn').innerText = 'Load';
   }
 }
