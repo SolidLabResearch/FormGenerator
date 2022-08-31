@@ -25,14 +25,7 @@ export default class IndexRoute extends Route {
     console.log('editing form', form);
     this.configureStorageLocations(form);
 
-    await this.store.fetchGraphForType('hydra-class');
-    await this.store.fetchGraphForType('rdf-form');
-    await this.store.fetchGraphForType('rdf-form-field');
-    await this.store.fetchGraphForType('rdf-form-option');
-    await this.store.fetchGraphForType('ui-form');
-    await this.store.fetchGraphForType('ui-form-field');
-    await this.store.fetchGraphForType('ui-form-option');
-    await this.store.fetchGraphForType('ui-form-choice');
+    await this.fetchGraphs();
 
     if (form) {
       this.loadForm();
@@ -60,6 +53,17 @@ export default class IndexRoute extends Route {
       storageLocation;
     this.store.classForModel('ui-form-choice').solid.defaultStorageLocation =
       storageLocation;
+  }
+
+  async fetchGraphs() {
+    await this.store.fetchGraphForType('hydra-class');
+    await this.store.fetchGraphForType('rdf-form');
+    await this.store.fetchGraphForType('rdf-form-field');
+    await this.store.fetchGraphForType('rdf-form-option');
+    await this.store.fetchGraphForType('ui-form');
+    await this.store.fetchGraphForType('ui-form-field');
+    await this.store.fetchGraphForType('ui-form-option');
+    await this.store.fetchGraphForType('ui-form-choice');
   }
 
   initiateNewRdfForm() {
