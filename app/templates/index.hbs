@@ -13,6 +13,13 @@
     </div>
   </div>
 
+  {{#if this.success}}
+    <div class="alert alert-success alert-dismissible margin-top">
+      {{this.success}}
+      <button type="button" class="btn-close" aria-label="Close" {{on 'click' this.clearSuccess}}></button>
+    </div>
+  {{/if}}
+
   <div class="row">
     <div class="col-md-4">
       <div class="card">
@@ -89,15 +96,30 @@
                   <div class="card-body">
                     <div class="d-flex align-items-center field-title">
                       {{#if (this.isEqual field.widget "string") }}
-                        <h6 class="card-title"><FaIcon @icon="font" /> Input String</h6>
+                        <h6 class="card-title">
+                          <FaIcon @icon="font" />
+                          Input String
+                        </h6>
                       {{else if (this.isEqual field.widget "textarea") }}
-                        <h6 class="card-title"><FaIcon @icon="text-height" /> Textarea</h6>
+                        <h6 class="card-title">
+                          <FaIcon @icon="text-height" />
+                          Textarea
+                        </h6>
                       {{else if (this.isEqual field.widget "dropdown")}}
-                        <h6 class="card-title"><FaIcon @icon="filter" /> Select Dropdown</h6>
+                        <h6 class="card-title">
+                          <FaIcon @icon="filter" />
+                          Select Dropdown
+                        </h6>
                       {{else if (this.isEqual field.widget "date") }}
-                        <h6 class="card-title"><FaIcon @icon="calendar-alt" /> Date</h6>
+                        <h6 class="card-title">
+                          <FaIcon @icon="calendar-alt" />
+                          Date
+                        </h6>
                       {{else if (this.isEqual field.widget "checkbox") }}
-                        <h6 class="card-title"><FaIcon @icon="check-circle" /> Checkbox</h6>
+                        <h6 class="card-title">
+                          <FaIcon @icon="check-circle" />
+                          Checkbox
+                        </h6>
                       {{/if}}
                       <div class="d-flex ms-auto">
                         <button type="button" class="btn btn-outline-danger" {{on "click"

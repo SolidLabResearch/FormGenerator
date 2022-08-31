@@ -16,6 +16,8 @@ export default class IndexController extends Controller {
   @tracked isSolidUiVocabulary =
     this.model.vocabulary === 'http://www.w3.org/ns/ui#';
 
+  @tracked success = null;
+
   @tracked
   fields = (() => {
     let fields;
@@ -98,6 +100,9 @@ export default class IndexController extends Controller {
   async save(event) {
     event.preventDefault();
 
+    event.target.disabled = true;
+    event.target.innerText = 'Saving...';
+
     this.fields.forEach((field, i) => {
       field.order = i;
       field.label = field.label.trim();
@@ -120,6 +125,10 @@ export default class IndexController extends Controller {
     this.model.form.fields = this.fields;
 
     await this.store.persist();
+
+    this.success = 'Successfully saved the form definition!';
+    event.target.disabled = false;
+    event.target.innerText = 'Save';
   }
 
   @action
@@ -243,5 +252,10 @@ export default class IndexController extends Controller {
     } else {
       return null;
     }
+  }
+
+  @action
+  clearSuccess() {
+    this.success = null;
   }
 }
