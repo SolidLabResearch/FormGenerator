@@ -56,6 +56,12 @@ export default class IndexRoute extends Route {
       storageLocation;
     this.store.classForModel('ui-form-choice').solid.defaultStorageLocation =
       storageLocation;
+    this.store.classForModel('shacl-form').solid.defaultStorageLocation =
+      storageLocation;
+    this.store.classForModel('shacl-form-field').solid.defaultStorageLocation =
+      storageLocation;
+    this.store.classForModel('shacl-form-option').solid.defaultStorageLocation =
+      storageLocation;
   }
 
   async fetchGraphs() {
@@ -67,6 +73,9 @@ export default class IndexRoute extends Route {
     await this.store.fetchGraphForType('ui-form-field');
     await this.store.fetchGraphForType('ui-form-option');
     await this.store.fetchGraphForType('ui-form-choice');
+    await this.store.fetchGraphForType('shacl-form');
+    await this.store.fetchGraphForType('shacl-form-field');
+    await this.store.fetchGraphForType('shacl-form-option');
   }
 
   initiateNewRdfForm() {
@@ -85,6 +94,10 @@ export default class IndexRoute extends Route {
     });
   }
 
+  initiateNewShaclForm() {
+    this.form = this.store.create('shacl-form', {});
+  }
+
   loadForm() {
     // Try rdf-form vocabulary first.
     this.supportedClass = this.store.all('hydra-class')[0];
@@ -93,6 +106,11 @@ export default class IndexRoute extends Route {
       // Try solid-ui vocabulary.
       this.form = this.store.all('ui-form')[0];
       this.vocabulary = 'http://www.w3.org/ns/ui#';
+    }
+    if (this.form === undefined) {
+      // Try shacl vocabulary.
+      this.form = this.store.all('shacl-form')[0];
+      this.vocabulary = 'http://www.w3.org/ns/shacl#';
     }
     console.log('loaded form', this.form);
     console.log('loaded supportedClass', this.supportedClass);

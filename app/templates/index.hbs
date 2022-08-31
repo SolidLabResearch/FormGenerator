@@ -9,6 +9,7 @@
                                                                                    false}}>RDF-Form
         </option>
         <option value="http://www.w3.org/ns/ui#" selected={{if this.isSolidUiVocabulary true false}}>Solid-UI</option>
+        <option value="http://www.w3.org/ns/shacl#" selected={{if this.isShaclVocabulary true false}}>SHACL</option>
       </select>
     </div>
   </div>
@@ -19,7 +20,8 @@
       <Input @type="text" class="form-control" id="uri" placeholder="Load from URI"
              @value={{this.model.loadedFormUri}} aria-describedby="load" />
     </div>
-    <small id="load" class="form-text text-muted">When loading a form resource, any changes will be discarded and the given URI will be loaded.</small>
+    <small id="load" class="form-text text-muted">When loading a form resource, any changes will be discarded and the
+      given URI will be loaded.</small>
   </form>
 
   {{#if this.success}}
@@ -45,14 +47,17 @@
               </div>
             </div>
           </DraggableObject>
-          <DraggableObject @content={{"textarea"}}>
-            <div class="card">
-              <div class="card-body">
-                <FaIcon @icon="text-height" />
-                Textarea
+          {{#if this.isShaclVocabulary }}
+          {{ else }}
+            <DraggableObject @content={{"textarea"}}>
+              <div class="card">
+                <div class="card-body">
+                  <FaIcon @icon="text-height" />
+                  Textarea
+                </div>
               </div>
-            </div>
-          </DraggableObject>
+            </DraggableObject>
+          {{/if}}
           <DraggableObject @content={{"dropdown"}}>
             <div class="card">
               <div class="card-body">
@@ -167,16 +172,27 @@
                         </div>
                       </div>
                     {{/if}}
-                    <div class="form-check">
-                      <Input @type="checkbox" class="form-check-input" id="required-{{field.uuid}}"
-                             name="required-{{field.uuid}}" @checked={{field.required}} />
-                      <label class="form-check-label" for="required-{{field.uuid}}">Required</label>
-                    </div>
-                    <div class="form-check">
-                      <Input @type="checkbox" class="form-check-input" id="multiple-{{field.uuid}}"
-                             name="multiple-{{field.uuid}}" @checked={{field.multiple}} />
-                      <label class="form-check-label" for="multiple-{{field.uuid}}">Allow multiple</label>
-                    </div>
+                    {{#if this.isShaclVocabulary }}
+                      <div class="input-group mb-3">
+                        <span class="input-group-text" id="label-min-{{field.uuid}}">Min count</span>
+                        <Input @type="integer" class="form-control" id="min-{{field.uuid}}" placeholder="Min count"
+                               @value={{field.minCount}} aria-describedby="label-min-{{field.uuid}}" />
+                        <span class="input-group-text" id="label-max-{{field.uuid}}">Max count</span>
+                        <Input @type="integer" class="form-control" id="max-{{field.uuid}}" placeholder="Max count"
+                               @value={{field.maxCount}} aria-describedby="label-max-{{field.uuid}}" />
+                      </div>
+                    {{ else }}
+                      <div class="form-check">
+                        <Input @type="checkbox" class="form-check-input" id="required-{{field.uuid}}"
+                               name="required-{{field.uuid}}" @checked={{field.required}} />
+                        <label class="form-check-label" for="required-{{field.uuid}}">Required</label>
+                      </div>
+                      <div class="form-check">
+                        <Input @type="checkbox" class="form-check-input" id="multiple-{{field.uuid}}"
+                               name="multiple-{{field.uuid}}" @checked={{field.multiple}} />
+                        <label class="form-check-label" for="multiple-{{field.uuid}}">Allow multiple</label>
+                      </div>
+                    {{/if}}
                     {{#if field.isSelect}}
                       {{#if field.canHaveChoiceBinding}}
                         <hr>
