@@ -223,7 +223,11 @@
             </div>
           </DraggableObjectTarget>
 
-          <button type="button" class="btn btn-success btn-margin" {{ on "click" this.save }}>Save</button>
+          <div class="input-group mb-3 margin-top">
+            <button type="button" class="btn btn-success" {{ on "click" this.save }}>Save to</button>
+            <Input @type="text" class="form-control" id="save-uri" placeholder="Save URI"
+                   @value={{this.formTarget}} aria-describedby="save-uri" />
+          </div>
         </div>
       </div>
     </div>

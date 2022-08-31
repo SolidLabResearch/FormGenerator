@@ -18,6 +18,8 @@ export default class IndexController extends Controller {
 
   @tracked success = null;
 
+  @tracked formTarget = this.form;
+
   @tracked
   fields = (() => {
     let fields;
@@ -103,6 +105,30 @@ export default class IndexController extends Controller {
     event.target.disabled = true;
     event.target.innerText = 'Saving...';
 
+    if (this.formTarget !== this.form) {
+      this.model.configureStorageLocations(this.formTarget);
+      await this.model.fetchGraphs();
+      this.store.changeGraph(namedNode(this.form), namedNode(this.formTarget));
+
+      /*this.model.form.defaultGraph = namedNode(this.formTarget);
+      if (this.vocabulary === 'http://rdf.danielbeeke.nl/form/form-dev.ttl#') {
+        this.model.supportedClass.defaultGraph = namedNode(this.formTarget);
+      }
+      this.fields.forEach((field) => {
+        field.defaultGraph = namedNode(this.formTarget);
+        if (field.isSelect) {
+          if (this.vocabulary === 'http://www.w3.org/ns/ui#') {
+            field.choice.defaultGraph = namedNode(this.formTarget);
+          }
+          field.options.forEach((option) => {
+            option.defaultGraph = namedNode(this.formTarget);
+          });
+        }
+      });*/
+
+      console.log(this.store.match(undefined, undefined, undefined, this.form));
+    }
+
     this.fields.forEach((field, i) => {
       field.order = i;
       field.label = field.label.trim();
@@ -125,6 +151,11 @@ export default class IndexController extends Controller {
     this.model.form.fields = this.fields;
 
     await this.store.persist();
+
+    if (this.formTarget !== this.form) {
+      console.log('Changing query parameter form');
+      this.form = this.formTarget;
+    }
 
     this.success = 'Successfully saved the form definition!';
     event.target.disabled = false;
