@@ -3,8 +3,11 @@
   <div class="d-flex align-items-center margin-top">
     <h1>Form Generator</h1>
     <div class="d-flex ms-auto">
-      <select class="form-select" id="vocabulary" aria-label="Vocabulary" {{on "change" this.changeVocabulary}} disabled={{if this.fields true false}}>
-        <option value="http://rdf.danielbeeke.nl/form/form-dev.ttl#" selected={{if this.isRdfFormVocabulary true false}}>RDF-Form</option>
+      <select class="form-select" id="vocabulary" aria-label="Vocabulary" {{on "change" this.changeVocabulary}}
+              disabled={{if this.fields true false}}>
+        <option value="http://rdf.danielbeeke.nl/form/form-dev.ttl#" selected={{if this.isRdfFormVocabulary true
+                                                                                   false}}>RDF-Form
+        </option>
         <option value="http://www.w3.org/ns/ui#" selected={{if this.isSolidUiVocabulary true false}}>Solid-UI</option>
       </select>
     </div>
@@ -85,7 +88,17 @@
                 <div class="card" id="card-{{field.uuid}}">
                   <div class="card-body">
                     <div class="d-flex align-items-center field-title">
-                      <h6 class="card-title">{{ field.widget }}</h6>
+                      {{#if (this.isEqual field.widget "string") }}
+                        <h6 class="card-title"><FaIcon @icon="font" /> Input String</h6>
+                      {{else if (this.isEqual field.widget "textarea") }}
+                        <h6 class="card-title"><FaIcon @icon="text-height" /> Textarea</h6>
+                      {{else if (this.isEqual field.widget "dropdown")}}
+                        <h6 class="card-title"><FaIcon @icon="filter" /> Select Dropdown</h6>
+                      {{else if (this.isEqual field.widget "date") }}
+                        <h6 class="card-title"><FaIcon @icon="calendar-alt" /> Date</h6>
+                      {{else if (this.isEqual field.widget "checkbox") }}
+                        <h6 class="card-title"><FaIcon @icon="check-circle" /> Checkbox</h6>
+                      {{/if}}
                       <div class="d-flex ms-auto">
                         <button type="button" class="btn btn-outline-danger" {{on "click"
                                                                                   (fn this.removeField field)}}>
@@ -140,7 +153,8 @@
                           <label for="choice-binding-{{field.uuid}}" id="choice-label-binding-{{field.uuid}}"
                                  class="col-sm-3 col-form-label">Choice Binding</label>
                           <div class="col-sm-9">
-                            <input type="text" class="form-control" id="choice-binding-{{field.uuid}}" placeholder="Choice Binding"
+                            <input type="text" class="form-control" id="choice-binding-{{field.uuid}}"
+                                   placeholder="Choice Binding"
                                    value={{field.choice.uri.value}}
                               {{ on "change" (fn this.updateChoiceBinding field) }}
                                    aria-describedby="choice-label-binding-{{this.field.uuid}}" />

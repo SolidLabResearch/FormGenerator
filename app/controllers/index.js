@@ -63,6 +63,10 @@ export default class IndexController extends Controller {
     return fields;
   })();
 
+  isEqual = (a, b) => {
+    return a === b;
+  };
+
   @action
   addFormElement(type) {
     if (type) {
