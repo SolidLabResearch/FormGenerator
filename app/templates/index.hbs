@@ -3,7 +3,7 @@
   <div class="d-flex align-items-center margin-top">
     <h1>Form Generator</h1>
     <div class="d-flex ms-auto">
-      <select class="form-select" id="vocabulary" aria-label="Vocabulary" {{on "change" this.changeVocabulary}}
+      <select class="form-select" aria-label="Vocabulary" {{on "change" this.changeVocabulary}}
               disabled={{if this.fields true false}}>
         <option value="http://rdf.danielbeeke.nl/form/form-dev.ttl#" selected={{if this.isRdfFormVocabulary true
                                                                                    false}}>RDF-Form
