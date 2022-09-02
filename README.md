@@ -1,7 +1,21 @@
 # form-generator
 
-This README outlines the details of collaborating on this Ember application.
-A short introduction of this app could easily go here.
+A form generator app with Solid - Google Forms but the Solid way.
+
+This application functions as a proof of concept for the Solid ecosystem. It is a form generator that allows users to
+create form definitions and share them with other users. The generated form definition as RDF is stored in a user's Pod
+and can then be used together with a form renderer to render the form.
+
+Such a form renderer is not part of this repository, but can be found
+at [phochste/FormViewer](https://github.com/phochste/FormViewer).
+
+This application functions as the solution for
+the [[SolidLabResearch/Challenges#64] Drag & drop form builder app to build a basic RDF form definition](https://github.com/SolidLabResearch/Challenges/issues/64)
+challenge which is part of
+the [[SolidLabResearch/Challenges#19] Solid basic form builder (Google Forms but the Solid way)](https://github.com/SolidLabResearch/Challenges/issues/19)
+scenario.
+
+A live version of this application can be found at [https://formgenerator.smessie.com/](https://formgenerator.smessie.com/).
 
 ## Prerequisites
 
@@ -45,7 +59,14 @@ Make use of the many generators for code, try `ember help generate` for more det
 
 ### Deploying
 
-Specify what it takes to deploy your app.
+Just upload the content in `dist/` to your webserver after building as described above.
+
+## Contribution
+
+We make use of [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
+
+When making changes to a pull request, we prefer to update the existing commits with a rebase instead of appending new
+commits.
 
 ## Further Reading / Useful Links
 
