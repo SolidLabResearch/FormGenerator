@@ -23,7 +23,9 @@ export default class IndexController extends Controller {
   @tracked success = null;
 
   @tracked
-  fields = (() => {
+  fields = this.loadFields();
+
+  loadFields() {
     let fields;
     if (
       this.model.vocabulary === 'http://rdf.danielbeeke.nl/form/form-dev.ttl#'
@@ -68,7 +70,10 @@ export default class IndexController extends Controller {
     } else if (this.model.vocabulary === 'http://www.w3.org/ns/shacl#') {
       fields = A(this.store.all('shacl-form-field').sortBy('order'));
       fields.forEach((field) => {
-        field.widget = this.getWidgetTypeFromShaclDatatypeOrNodeKind(field.datatype, field.nodeKind);
+        field.widget = this.getWidgetTypeFromShaclDatatypeOrNodeKind(
+          field.datatype,
+          field.nodeKind
+        );
         field.isSelect =
           field.nodeKind?.value === 'http://www.w3.org/ns/shacl#IRI';
         field.options.forEach((option) => {
@@ -77,8 +82,11 @@ export default class IndexController extends Controller {
       });
     }
     return fields;
-  })();
+  }
 
+  /**
+   * Used in the template.
+   */
   isEqual = (a, b) => {
     return a === b;
   };
@@ -242,11 +250,7 @@ export default class IndexController extends Controller {
   @action
   changeVocabulary(event) {
     // Clear any existing form.
-    this.fields.forEach((field) => {
-      this.removeField(field);
-    });
-    this.model.form.destroy();
-    this.model.supportedClass?.destroy();
+    this.clearForm();
 
     // Update the vocabulary.
     this.model.vocabulary = event.target.value;
@@ -331,13 +335,36 @@ export default class IndexController extends Controller {
     this.success = null;
   }
 
+  clearForm() {
+    this.fields?.forEach((field) => {
+      this.removeField(field);
+    });
+    this.model.form?.destroy();
+    this.model.supportedClass?.destroy();
+  }
+
   @action
-  loadForm(event) {
+  async loadForm(event) {
     event.preventDefault();
     document.getElementById('load-btn').disabled = true;
     document.getElementById('load-btn').innerText = 'Loading...';
 
+    this.clearForm();
+
     this.form = this.model.loadedFormUri;
+    this.model.configureStorageLocations(this.form);
+    await this.model.fetchGraphs();
+
+    this.model.loadForm();
+
+    this.isRdfFormVocabulary =
+      this.model.vocabulary === 'http://rdf.danielbeeke.nl/form/form-dev.ttl#';
+    this.isSolidUiVocabulary =
+      this.model.vocabulary === 'http://www.w3.org/ns/ui#';
+    this.isShaclVocabulary =
+      this.model.vocabulary === 'http://www.w3.org/ns/shacl#';
+
+    this.fields = this.loadFields();
 
     document.getElementById('load-btn').disabled = false;
     document.getElementById('load-btn').innerText = 'Load';

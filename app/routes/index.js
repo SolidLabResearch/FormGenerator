@@ -102,6 +102,7 @@ export default class IndexRoute extends Route {
     // Try rdf-form vocabulary first.
     this.supportedClass = this.store.all('hydra-class')[0];
     this.form = this.store.all('rdf-form')[0];
+    this.vocabulary = 'http://rdf.danielbeeke.nl/form/form-dev.ttl#';
     if (this.form === undefined) {
       // Try solid-ui vocabulary.
       this.form = this.store.all('ui-form')[0];
