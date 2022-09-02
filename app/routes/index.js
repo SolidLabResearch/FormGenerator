@@ -19,7 +19,7 @@ export default class IndexRoute extends Route {
 
   loadedFormUri;
 
-  @tracked vocabulary = 'http://rdf.danielbeeke.nl/form/form-dev.ttl#';
+  @tracked vocabulary = 'http://www.w3.org/ns/shacl#';
 
   async model({ form }) {
     await this.solidAuth.ensureLogin();
@@ -32,7 +32,7 @@ export default class IndexRoute extends Route {
     if (form) {
       this.loadForm();
     } else {
-      this.initiateNewRdfForm();
+      this.initiateNewShaclForm();
     }
     return this;
   }
