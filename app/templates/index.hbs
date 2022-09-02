@@ -31,6 +31,12 @@
       <button type="button" class="btn-close" aria-label="Close" {{on 'click' this.clearSuccess}}></button>
     </div>
   {{/if}}
+  {{#if this.error}}
+    <div class="alert alert-danger alert-dismissible margin-top">
+      {{this.error}}
+      <button type="button" class="btn-close" aria-label="Close" {{on 'click' this.clearError}}></button>
+    </div>
+  {{/if}}
 
   <div class="row">
     <div class="col-md-4">

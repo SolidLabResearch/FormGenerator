@@ -21,6 +21,7 @@ export default class IndexController extends Controller {
     this.model.vocabulary === 'http://www.w3.org/ns/shacl#';
 
   @tracked success = null;
+  @tracked error = null;
 
   @tracked
   fields = this.loadFields();
@@ -181,20 +182,53 @@ export default class IndexController extends Controller {
   }
 
   @action
-  updateBinding(element, event) {
+  async updateBinding(element, event) {
+    this.error = null;
+
+    let binding = event.target.value;
+    if (binding.includes(':')) {
+      binding = await this.replacePrefixInBinding(binding);
+      if (!binding) {
+        return;
+      }
+    }
     if (element.isUiFormOption || element.isShaclFormOption) {
-      element.setUri(namedNode(event.target.value));
+      element.setUri(namedNode(binding));
     } else {
-      element.binding = namedNode(event.target.value);
+      element.binding = namedNode(binding);
     }
   }
 
   @action
-  updateChoiceBinding(element, event) {
-    element.choice.setUri(namedNode(event.target.value));
+  async updateChoiceBinding(element, event) {
+    this.error = null;
+
+    let binding = event.target.value;
+    if (binding.includes(':')) {
+      binding = await this.replacePrefixInBinding(binding);
+      if (!binding) {
+        return;
+      }
+    }
+    element.choice.setUri(namedNode(binding));
     element.options.forEach((option) => {
       option.setRdfType(element.choice.uri);
     });
+  }
+
+  async replacePrefixInBinding(binding) {
+    // Do call to prefix.cc to get the full URI
+    const [prefix, suffix] = binding.split(':');
+    const response = await fetch(`https://prefix.cc/${prefix}.file.json`);
+    const json = await response.json();
+    const uri = json[prefix];
+    if (uri) {
+      binding = uri + suffix;
+    } else {
+      this.error = `Could not find a prefix for '${prefix}'!`;
+      return undefined;
+    }
+    return binding;
   }
 
   @action
@@ -333,6 +367,11 @@ export default class IndexController extends Controller {
   @action
   clearSuccess() {
     this.success = null;
+  }
+
+  @action
+  clearError() {
+    this.error = null;
   }
 
   clearForm() {
