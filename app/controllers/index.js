@@ -194,9 +194,8 @@ export default class IndexController extends Controller {
     }
     if (element.isUiFormOption || element.isShaclFormOption) {
       element.setUri(namedNode(binding));
-    } else {
-      element.binding = namedNode(binding);
     }
+    element.binding = namedNode(binding);
   }
 
   @action

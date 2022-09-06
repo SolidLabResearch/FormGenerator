@@ -2,6 +2,7 @@ import SemanticModel, {
   solid,
   string,
 } from 'ember-solid/models/semantic-model';
+import { tracked } from '@glimmer/tracking';
 
 @solid({
   defaultStorageLocation: 'private/tests/my-forms.ttl', // default location in solid pod
@@ -14,6 +15,6 @@ export default class ShaclFormOption extends SemanticModel {
   label;
 
   // Extra helper properties used in template and/or for compatibility with other vocabularies.
-  binding; // Empty NamedNode.
+  @tracked binding; // Empty NamedNode.
   isShaclFormOption = true;
 }
