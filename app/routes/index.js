@@ -66,17 +66,17 @@ export default class IndexRoute extends Route {
 
   async fetchGraphs() {
     await Promise.all([
-      this.try(this.store, 'fetchGraphForType', 'hydra-class'),
-      this.try(this.store, 'fetchGraphForType', 'rdf-form'),
-      this.try(this.store, 'fetchGraphForType', 'rdf-form-field'),
-      this.try(this.store, 'fetchGraphForType', 'rdf-form-option'),
-      this.try(this.store, 'fetchGraphForType', 'ui-form'),
-      this.try(this.store, 'fetchGraphForType', 'ui-form-field'),
-      this.try(this.store, 'fetchGraphForType', 'ui-form-option'),
-      this.try(this.store, 'fetchGraphForType', 'ui-form-choice'),
-      this.try(this.store, 'fetchGraphForType', 'shacl-form'),
-      this.try(this.store, 'fetchGraphForType', 'shacl-form-field'),
-      this.try(this.store, 'fetchGraphForType', 'shacl-form-option'),
+      this.try(this.store, 'fetchGraphForType', 'hydra-class', true),
+      this.try(this.store, 'fetchGraphForType', 'rdf-form', true),
+      this.try(this.store, 'fetchGraphForType', 'rdf-form-field', true),
+      this.try(this.store, 'fetchGraphForType', 'rdf-form-option', true),
+      this.try(this.store, 'fetchGraphForType', 'ui-form', true),
+      this.try(this.store, 'fetchGraphForType', 'ui-form-field', true),
+      this.try(this.store, 'fetchGraphForType', 'ui-form-option', true),
+      this.try(this.store, 'fetchGraphForType', 'ui-form-choice', true),
+      this.try(this.store, 'fetchGraphForType', 'shacl-form', true),
+      this.try(this.store, 'fetchGraphForType', 'shacl-form-field', true),
+      this.try(this.store, 'fetchGraphForType', 'shacl-form-option', true),
     ]);
   }
 
@@ -84,7 +84,7 @@ export default class IndexRoute extends Route {
     try {
       // Class and function are separate because otherwise `this` does not work anymore in the called function.
       await klass[func](...args);
-    } catch (e) {
+    } catch (_) {
       // This is fine. We are expecting this.
     }
   }
