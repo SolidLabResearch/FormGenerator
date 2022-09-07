@@ -186,7 +186,7 @@ export default class IndexController extends Controller {
     this.error = null;
 
     let binding = event.target.value;
-    if (binding.includes(':')) {
+    if (binding.includes(':') && !binding.includes('://')) {
       binding = await this.replacePrefixInBinding(binding);
       if (!binding) {
         return;
@@ -203,7 +203,7 @@ export default class IndexController extends Controller {
     this.error = null;
 
     let binding = event.target.value;
-    if (binding.includes(':')) {
+    if (binding.includes(':') && !binding.includes('://')) {
       binding = await this.replacePrefixInBinding(binding);
       if (!binding) {
         return;
