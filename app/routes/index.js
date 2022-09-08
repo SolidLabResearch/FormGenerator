@@ -17,7 +17,7 @@ export default class IndexRoute extends Route {
   supportedClass;
   @tracked form;
 
-  loadedFormUri;
+  @tracked loadedFormUri;
 
   @tracked vocabulary = 'http://www.w3.org/ns/shacl#';
 
