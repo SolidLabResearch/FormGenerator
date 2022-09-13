@@ -407,4 +407,10 @@ export default class IndexController extends Controller {
     document.getElementById('load-btn').disabled = false;
     document.getElementById('load-btn').innerText = 'Load';
   }
+
+  @action
+  async logout() {
+    await this.solidAuth.ensureLogout();
+    this.model.refresh();
+  }
 }
