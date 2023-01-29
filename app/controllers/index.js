@@ -149,6 +149,12 @@ export default class IndexController extends Controller {
     event.target.disabled = true;
     event.target.innerText = 'Saving...';
 
+    if (!this.validateInputs()) {
+      event.target.disabled = false;
+      event.target.innerText = 'Save';
+      return;
+    }
+
     this.fields.forEach((field, i) => {
       field.order = i;
 
@@ -181,16 +187,59 @@ export default class IndexController extends Controller {
     event.target.innerText = 'Save';
   }
 
+  validateInputs() {
+    let valid = true;
+
+    if (!this.model.form.binding?.value.trim()) {
+      this.model.form.error = 'Please fill in a binding.';
+    }
+    valid &= !this.model.form.error;
+
+    this.fields.forEach((field) => {
+      if (!field.binding?.value.trim()) {
+        field.error = 'Please fill in a binding.';
+      }
+      valid &= !field.error;
+
+      if (field.isSelect) {
+        field.options.forEach((option) => {
+          if (!option.binding?.value.trim()) {
+            option.error = 'Please fill in a binding.';
+          }
+          valid &= !option.error;
+        });
+
+        if (field.canHaveChoiceBinding) {
+          valid &= !field.choice.error;
+        }
+      }
+    });
+    return valid;
+  }
+
   @action
   async updateBinding(element, event) {
     this.error = null;
+    element.error = '';
 
-    let binding = event.target.value;
-    if (binding.includes(':') && !binding.includes('://')) {
-      binding = await this.replacePrefixInBinding(binding);
-      if (!binding) {
-        return;
+    let binding = event.target.value?.trim();
+
+    if (!binding) {
+      element.error = 'Please fill in a binding.';
+      return;
+    }
+
+    if (binding.includes(':')) {
+      if (!binding.includes('://')) {
+        binding = await this.replacePrefixInBinding(binding);
+        if (!binding) {
+          element.error = 'Please fill in a valid binding.';
+          return;
+        }
       }
+    } else {
+      element.error = 'Please fill in a valid binding.';
+      return;
     }
     if (element.isUiFormOption || element.isShaclFormOption) {
       element.setUri(namedNode(binding));
@@ -201,13 +250,26 @@ export default class IndexController extends Controller {
   @action
   async updateChoiceBinding(element, event) {
     this.error = null;
+    element.choice.error = '';
 
-    let binding = event.target.value;
-    if (binding.includes(':') && !binding.includes('://')) {
-      binding = await this.replacePrefixInBinding(binding);
-      if (!binding) {
-        return;
+    let binding = event.target.value?.trim();
+
+    if (!binding) {
+      element.choice.error = 'Please fill in a binding.';
+      return;
+    }
+
+    if (binding.includes(':')) {
+      if (!binding.includes('://')) {
+        binding = await this.replacePrefixInBinding(binding);
+        if (!binding) {
+          element.choice.error = 'Please fill in a valid binding.';
+          return;
+        }
       }
+    } else {
+      element.choice.error = 'Please fill in a valid binding.';
+      return;
     }
     element.choice.setUri(namedNode(binding));
     element.options.forEach((option) => {

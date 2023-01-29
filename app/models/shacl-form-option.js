@@ -17,4 +17,5 @@ export default class ShaclFormOption extends SemanticModel {
   // Extra helper properties used in template and/or for compatibility with other vocabularies.
   @tracked binding; // Empty NamedNode.
   isShaclFormOption = true;
+  @tracked error = '';
 }

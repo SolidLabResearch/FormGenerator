@@ -2,6 +2,7 @@ import SemanticModel, {
   solid,
   string,
 } from 'ember-solid/models/semantic-model';
+import { tracked } from '@glimmer/tracking';
 
 @solid({
   defaultStorageLocation: 'private/tests/my-forms.ttl', // default location in solid pod
@@ -12,4 +13,7 @@ import SemanticModel, {
 export default class UiFormChoice extends SemanticModel {
   @string({ predicate: 'http://www.w3.org/2000/01/rdf-schema#comment' })
   comment;
+
+  // Extra helper properties used in template and/or for compatibility with other vocabularies.
+  @tracked error = '';
 }

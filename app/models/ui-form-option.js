@@ -17,4 +17,5 @@ export default class UiFormOption extends SemanticModel {
   // Extra helper properties used in template and/or for compatibility with other vocabularies.
   @tracked binding; // Empty NamedNode.
   isUiFormOption = true;
+  @tracked error = '';
 }

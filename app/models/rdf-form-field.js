@@ -7,6 +7,7 @@ import SemanticModel, {
   hasMany,
 } from 'ember-solid/models/semantic-model';
 import { namedNode } from 'rdflib';
+import { tracked } from '@glimmer/tracking';
 
 @solid({
   defaultStorageLocation: 'private/tests/my-forms.ttl', // default location in solid pod
@@ -47,4 +48,5 @@ export default class RdfFormField extends SemanticModel {
   // Extra helper properties used in template.
   isSelect = false;
   canHavePlaceholder = false;
+  @tracked error = '';
 }

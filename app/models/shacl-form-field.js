@@ -6,6 +6,7 @@ import SemanticModel, {
   hasMany,
 } from 'ember-solid/models/semantic-model';
 import { namedNode } from 'rdflib';
+import { tracked } from '@glimmer/tracking';
 
 @solid({
   defaultStorageLocation: 'private/tests/my-forms.ttl', // default location in solid pod
@@ -46,4 +47,5 @@ export default class ShaclFormField extends SemanticModel {
   isSelect = false;
   canHavePlaceholder = false;
   widget = 'string';
+  @tracked error = '';
 }

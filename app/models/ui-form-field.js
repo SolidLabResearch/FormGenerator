@@ -44,4 +44,5 @@ export default class UiFormField extends SemanticModel {
   widget = 'string';
   @tracked options = [];
   canHaveChoiceBinding = true;
+  @tracked error = '';
 }

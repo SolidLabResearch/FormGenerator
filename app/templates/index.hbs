@@ -107,6 +107,9 @@
                      value={{this.model.form.binding.value}}
                 {{ on "change" (fn this.updateBinding this.model.form) }}
                      aria-describedby="label-binding-{{this.model.form.uuid}}" />
+              {{#if this.model.form.error }}
+                <small class="text-danger">{{ this.model.form.error }}</small>
+              {{/if}}
             </div>
           </div>
 
@@ -165,7 +168,10 @@
                         <input type="text" class="form-control" id="binding-{{field.uuid}}" placeholder="Binding"
                                value={{field.binding.value}}
                           {{ on "change" (fn this.updateBinding field) }}
-                               aria-describedby="label-binding-{{this.field.uuid}}" />
+                               aria-describedby="label-binding-{{field.uuid}}" />
+                        {{#if field.error }}
+                          <small class="text-danger">{{ field.error }}</small>
+                        {{/if}}
                       </div>
                     </div>
                     {{#if field.canHavePlaceholder}}
@@ -213,6 +219,9 @@
                                    value={{field.choice.uri.value}}
                               {{ on "change" (fn this.updateChoiceBinding field) }}
                                    aria-describedby="choice-label-binding-{{this.field.uuid}}" />
+                            {{#if field.choice.error }}
+                              <small class="text-danger">{{ field.choice.error }}</small>
+                            {{/if}}
                           </div>
                         </div>
                       {{/if}}
@@ -221,7 +230,7 @@
                       <div class="mb-3 row">
                         <div class="col-sm-10">
                           {{#each field.options as |option|}}
-                            <div class="input-group mb-3">
+                            <div class="input-group mt-3">
                               <Input @type="text" class="form-control" id="label-{{option.uuid}}" placeholder="Label"
                                      @value={{option.label}} aria-describedby="delete-{{option.uuid}}" />
                               <input type="text" class="form-control" id="binding-{{option.uuid}}" placeholder="Binding"
@@ -232,9 +241,12 @@
                                 <FaIcon @icon="trash-can" />
                               </button>
                             </div>
+                            {{#if option.error }}
+                              <small class="text-danger">{{ option.error }}</small>
+                            {{/if}}
                           {{/each}}
                         </div>
-                        <div class="col-sm-2">
+                        <div class="col-sm-2 mt-3">
                           <button type="button" class="btn btn-outline-success" {{ on "click"
                                                                                       (fn this.addOption field) }}>
                             <FaIcon @icon="plus" />

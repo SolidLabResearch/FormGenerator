@@ -4,6 +4,7 @@ import SemanticModel, {
   hasMany,
 } from 'ember-solid/models/semantic-model';
 import { namedNode } from 'rdflib';
+import { tracked } from '@glimmer/tracking';
 
 @solid({
   defaultStorageLocation: 'private/tests/my-forms.ttl', // default location in solid pod
@@ -21,4 +22,7 @@ export default class ShaclForm extends SemanticModel {
 
   @uri({ predicate: 'http://www.w3.org/ns/shacl#targetClass' })
   binding = namedNode('');
+
+  // Extra helper properties used in template.
+  @tracked error = '';
 }

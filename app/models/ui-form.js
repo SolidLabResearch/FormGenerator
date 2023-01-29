@@ -4,6 +4,7 @@ import SemanticModel, {
   uri,
 } from 'ember-solid/models/semantic-model';
 import { namedNode } from 'rdflib';
+import { tracked } from '@glimmer/tracking';
 
 @solid({
   defaultStorageLocation: 'private/tests/my-forms.ttl', // default location in solid pod
@@ -22,4 +23,7 @@ export default class UiForm extends SemanticModel {
 
   @uri({ predicate: 'http://www.w3.org/ns/ui#property' })
   binding = namedNode('');
+
+  // Extra helper properties used in template.
+  @tracked error = '';
 }
