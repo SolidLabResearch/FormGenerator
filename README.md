@@ -34,7 +34,7 @@ You will need the following things properly installed on your computer.
 
 ## Running / Development
 
-* `ember serve`
+* `ember serve` (or `npx ember serve` if ember not installed globally)
 * Visit your app at [http://localhost:4200](http://localhost:4200).
 * Visit your tests at [http://localhost:4200/tests](http://localhost:4200/tests).
 
