@@ -27,7 +27,7 @@ export default class IndexRoute extends Route {
     console.log('editing form', form);
     this.configureStorageLocations(form);
 
-    await this.fetchGraphs();
+    await this.fetchGraphs(form !== null);
 
     if (form) {
       this.loadForm();
@@ -64,7 +64,13 @@ export default class IndexRoute extends Route {
       storageLocation;
   }
 
-  async fetchGraphs() {
+  async fetchGraphs(removeN3Rules = false) {
+    // Remove all N3 rules from the resource.
+    let matches;
+    if (removeN3Rules) {
+      matches = await this.removeN3RulesFromResource();
+    }
+
     await this.store.fetchGraphForType('hydra-class', true);
     await this.store.fetchGraphForType('rdf-form', true);
     await this.store.fetchGraphForType('rdf-form-field', true);
@@ -76,6 +82,11 @@ export default class IndexRoute extends Route {
     await this.store.fetchGraphForType('shacl-form', true);
     await this.store.fetchGraphForType('shacl-form-field', true);
     await this.store.fetchGraphForType('shacl-form-option', true);
+
+    // Add N3 rules back to the resource.
+    if (removeN3Rules) {
+      await this.addN3RulesToResource(matches);
+    }
   }
 
   initiateNewRdfForm() {
@@ -115,5 +126,86 @@ export default class IndexRoute extends Route {
     }
     console.log('loaded form', this.form);
     console.log('loaded supportedClass', this.supportedClass);
+  }
+
+  async removeN3RulesFromResource() {
+    const fetch = this.solidAuth.session.fetch;
+
+    const response = await fetch(this.loadedFormUri, {
+      method: 'GET',
+    });
+
+    // Get content-type.
+    const contentType = response.headers.get('content-type');
+
+    // Get content.
+    let text = await response.text();
+    console.log(text);
+
+    // Match prefixes.
+    const prefixRegex = /(@prefix|PREFIX)\s+[^:]*:\s*<[^>]*>\s*\.?\n/g;
+    const prefixes = text.match(prefixRegex);
+
+    // Match N3 rules.
+    const rulesRegex =
+      /\{[^{}]*}\s*(=>|[^\s{}]*implies[^\s{}]*)\s*{[^{}]*}\s*\./g;
+    const rules = text.match(rulesRegex);
+    console.log(rules);
+
+    // Remove N3 rules.
+    rules?.forEach((match) => {
+      text = text.replace(match, '');
+    });
+
+    // Save resource without N3 rules.
+    await fetch(this.loadedFormUri, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': contentType,
+      },
+      body: text,
+    });
+
+    return { rules, prefixes };
+  }
+
+  async addN3RulesToResource(matches) {
+    const { rules, prefixes } = matches;
+    const fetch = this.solidAuth.session.fetch;
+
+    const response = await fetch(this.loadedFormUri, {
+      method: 'GET',
+    });
+
+    // Get content-type.
+    const contentType = response.headers.get('content-type');
+
+    // Get content.
+    let text = await response.text();
+
+    // Match prefixes.
+    const prefixRegex = /(@prefix|PREFIX)\s+[^:]*:\s*<[^>]*>\s*\.?\n/g;
+    const matchedPrefixes = text.match(prefixRegex);
+
+    // Add prefixes in front if not already present.
+    prefixes?.forEach((prefix) => {
+      if (!matchedPrefixes?.includes(prefix)) {
+        text = prefix + text;
+      }
+    });
+
+    // Add N3 rules.
+    rules.forEach((match) => {
+      text += match;
+    });
+
+    // Save resource with N3 rules.
+    await fetch(this.loadedFormUri, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': contentType,
+      },
+      body: text,
+    });
   }
 }

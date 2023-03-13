@@ -155,6 +155,9 @@ export default class IndexController extends Controller {
       return;
     }
 
+    // Remove all N3 rules from the resource.
+    const matches = await this.model.removeN3RulesFromResource();
+
     this.fields.forEach((field, i) => {
       field.order = i;
 
@@ -181,6 +184,9 @@ export default class IndexController extends Controller {
     this.model.form.fields = this.fields;
 
     await this.store.persist();
+
+    // Re-add the N3 rules to the resource.
+    await this.model.addN3RulesToResource(matches);
 
     this.success = 'Successfully saved the form definition!';
     event.target.disabled = false;
@@ -453,7 +459,7 @@ export default class IndexController extends Controller {
 
     this.form = this.model.loadedFormUri;
     this.model.configureStorageLocations(this.form);
-    await this.model.fetchGraphs();
+    await this.model.fetchGraphs(true);
 
     this.model.loadForm();
 
