@@ -3,6 +3,8 @@ import { inject as service } from '@ember/service';
 import { v4 as uuid } from 'uuid';
 import { namedNode } from 'rdflib';
 import { tracked } from '@glimmer/tracking';
+import { n3reasoner } from 'eyereasoner';
+import { QueryEngine } from '@comunica/query-sparql-solid';
 
 export default class IndexRoute extends Route {
   queryParams = {
@@ -20,6 +22,13 @@ export default class IndexRoute extends Route {
   @tracked loadedFormUri;
 
   @tracked vocabulary = 'http://www.w3.org/ns/shacl#';
+
+  engine = new QueryEngine();
+
+  @tracked policyType = '';
+  @tracked policyURL = '';
+  @tracked policyMethod = '';
+  @tracked policyContentType = '';
 
   async model({ form }) {
     await this.solidAuth.ensureLogin();
@@ -87,6 +96,9 @@ export default class IndexRoute extends Route {
     if (removeN3Rules) {
       await this.addN3RulesToResource(matches);
     }
+
+    // Fill in the form with submit event policy values.
+    await this.fillInFormWithSubmitEventPolicy(matches);
   }
 
   initiateNewRdfForm() {
@@ -140,7 +152,6 @@ export default class IndexRoute extends Route {
 
     // Get content.
     let text = await response.text();
-    console.log(text);
 
     // Match prefixes.
     const prefixRegex = /(@prefix|PREFIX)\s+[^:]*:\s*<[^>]*>\s*\.?\n/g;
@@ -150,7 +161,6 @@ export default class IndexRoute extends Route {
     const rulesRegex =
       /\{[^{}]*}\s*(=>|[^\s{}]*implies[^\s{}]*)\s*{[^{}]*}\s*\./g;
     const rules = text.match(rulesRegex);
-    console.log(rules);
 
     // Remove N3 rules.
     rules?.forEach((match) => {
@@ -207,5 +217,64 @@ export default class IndexRoute extends Route {
       },
       body: text,
     });
+  }
+
+  async fillInFormWithSubmitEventPolicy(matches) {
+    for (const rule of matches.rules) {
+      const options = { blogic: false, outputType: 'string' };
+      const query = `${
+        matches.prefixes ? matches.prefixes.join('\n') : ''
+      }\n${rule}`;
+      const reasonerResult = await n3reasoner(
+        '_:id <http://example.org/event> <http://example.org/Submit> .',
+        query,
+        options
+      );
+
+      const queryPolicy = `
+      PREFIX ex: <http://example.org/>
+      PREFIX pol: <https://www.example.org/ns/policy#>
+      PREFIX fno: <https://w3id.org/function/ontology#>
+
+      SELECT ?executionTarget ?method ?url ?contentType WHERE {
+        ?id pol:policy ?policy .
+        ?policy a fno:Execution .
+        ?policy fno:executes ?executionTarget .
+        ?policy ex:method ?method .
+        ?policy ex:url ?url .
+        OPTIONAL { ?policy ex:contentType ?contentType } .
+      }
+      `;
+      const bindings = await (
+        await this.engine.queryBindings(queryPolicy, {
+          sources: [
+            {
+              type: 'stringSource',
+              value: reasonerResult,
+              mediaType: 'text/n3',
+              baseIRI: this.loadedFormUri,
+            },
+          ],
+        })
+      ).toArray();
+
+      const policies = bindings.map((row) => {
+        return {
+          executionTarget: row.get('executionTarget').value,
+          method: row.get('method').value,
+          url: row.get('url').value,
+          contentType: row.get('contentType')?.value,
+        };
+      });
+
+      for (const policy of policies) {
+        if (policy.executionTarget === 'http://example.org/httpRequest') {
+          this.policyType = 'HTTP';
+          this.policyURL = policy.url;
+          this.policyMethod = policy.method;
+          this.policyContentType = policy.contentType;
+        }
+      }
+    }
   }
 }

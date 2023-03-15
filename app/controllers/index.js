@@ -4,6 +4,7 @@ import { inject as service } from '@ember/service';
 import { tracked } from '@glimmer/tracking';
 import { A } from '@ember/array';
 import { namedNode } from 'rdflib';
+import { n3reasoner } from 'eyereasoner';
 
 export default class IndexController extends Controller {
   queryParams = ['form'];
@@ -25,6 +26,11 @@ export default class IndexController extends Controller {
 
   @tracked
   fields = this.loadFields();
+
+  @tracked policyTypeError = '';
+  @tracked policyURLError = '';
+  @tracked policyMethodError = '';
+  @tracked policyContentTypeError = '';
 
   loadFields() {
     let fields;
@@ -156,7 +162,7 @@ export default class IndexController extends Controller {
     }
 
     // Remove all N3 rules from the resource.
-    const matches = await this.model.removeN3RulesFromResource();
+    let matches = await this.model.removeN3RulesFromResource();
 
     this.fields.forEach((field, i) => {
       field.order = i;
@@ -184,6 +190,38 @@ export default class IndexController extends Controller {
     this.model.form.fields = this.fields;
 
     await this.store.persist();
+
+    // Apply the policy configuration to the rules.
+    matches.rules = await matches.rules.filter(
+      (rule) => !this.isEventSubmitRule(rule, matches.prefixes)
+    );
+    matches.rules.push(`
+    {
+      _:id ex:event ex:Submit.
+    } => {
+      ex:HttpPolicy pol:policy ex:Pol .
+      ex:Pol a fno:Execution ;
+        fno:executes ex:httpRequest ;
+        ex:method "${this.model.policyMethod}" ;
+        ex:url <${this.model.policyURL}> ;
+        ex:contentType "${this.model.policyContentType}" .
+    } .
+    `);
+    matches.prefixes = this.addIfNotIncluded(
+      matches.prefixes,
+      'ex',
+      'http://example.org/'
+    );
+    matches.prefixes = this.addIfNotIncluded(
+      matches.prefixes,
+      'fno',
+      'https://w3id.org/function/ontology#'
+    );
+    matches.prefixes = this.addIfNotIncluded(
+      matches.prefixes,
+      'pol',
+      'https://www.example.org/ns/policy#'
+    );
 
     // Re-add the N3 rules to the resource.
     await this.model.addN3RulesToResource(matches);
@@ -220,6 +258,27 @@ export default class IndexController extends Controller {
         }
       }
     });
+
+    if (!this.model.policyURL.trim()) {
+      this.policyURLError = 'Please fill in a URL.';
+      valid = false;
+    }
+    if (!this.model.policyContentType.trim()) {
+      this.policyContentTypeError = 'Please fill in a Content-Type.';
+      valid = false;
+    }
+    if (
+      !['GET', 'POST', 'PUT', 'DELETE', 'PATCH'].includes(
+        this.model.policyMethod
+      )
+    ) {
+      this.policyMethodError = 'Please choose a valid HTTP method.';
+      valid = false;
+    }
+    if (!['HTTP'].includes(this.model.policyType)) {
+      this.policyTypeError = 'Please choose a valid policy type.';
+      valid = false;
+    }
     return valid;
   }
 
@@ -480,5 +539,48 @@ export default class IndexController extends Controller {
   async logout() {
     await this.solidAuth.ensureLogout();
     this.model.refresh();
+  }
+
+  async isEventSubmitRule(rule, prefixes) {
+    const options = { blogic: false, outputType: 'string' };
+    const query = `${prefixes ? prefixes.join('\n') : ''}\n${rule}`;
+    const reasonerResult = await n3reasoner(
+      '_:id <http://example.org/event> <http://example.org/Submit> .',
+      query,
+      options
+    );
+    return reasonerResult.length > 0;
+  }
+  addIfNotIncluded(prefixes, prefix, url) {
+    let alreadyIncluded = false;
+    prefixes.forEach((p) => {
+      if (p.includes(prefix) && p.includes(url)) {
+        alreadyIncluded = true;
+      }
+    });
+    if (!alreadyIncluded) {
+      prefixes.push(`@prefix ${prefix}: <${url}> .`);
+    }
+    return prefixes;
+  }
+
+  @action
+  updatePolicyType(event) {
+    this.model.policyType = event.target.value?.trim();
+  }
+
+  @action
+  updatePolicyURL(event) {
+    this.model.policyURL = event.target.value?.trim();
+  }
+
+  @action
+  updatePolicyMethod(event) {
+    this.model.policyMethod = event.target.value?.trim();
+  }
+
+  @action
+  updatePolicyContentType(event) {
+    this.model.policyContentType = event.target.value?.trim();
   }
 }

@@ -114,6 +114,71 @@
             </div>
           </div>
 
+          <hr>
+          <h6 class="card-subtitle mb-2 text-muted">Fill in the details below about where the data should be stored when someone fill in the form and click submit.</h6>
+
+          <div class="mb-3 row">
+            <label for="policy-type-{{this.model.form.uuid}}" id="label-policy-type-{{this.model.form.uuid}}"
+                   class="col-sm-3 col-form-label">Policy Type</label>
+            <div class="col-sm-9">
+              <select class="form-select" id="policy-type-{{this.model.form.uuid}}"
+                      {{ on "change" this.updatePolicyType }}
+                      aria-describedby="label-policy-type-{{this.model.form.uuid}}">
+                <option value="HTTP" selected={{this.isEqual this.model.policyType "HTTP"}}>HTTP Request</option>
+              </select>
+              {{#if this.policyTypeError }}
+                <small class="text-danger">{{ this.policyTypeError }}</small>
+              {{/if}}
+            </div>
+          </div>
+
+          <div class="mb-3 row">
+            <label for="policy-url-{{this.model.form.uuid}}" id="label-policy-url-{{this.model.form.uuid}}"
+                   class="col-sm-3 col-form-label">Policy URL</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="policy-url-{{this.model.form.uuid}}" placeholder="https://httpbin.org/post"
+                     value={{this.model.policyURL}} {{ on "change" this.updatePolicyURL }}
+                     aria-describedby="label-policy-url-{{this.model.form.uuid}}" />
+              {{#if this.policyURLError }}
+                <small class="text-danger">{{ this.policyTypeError }}</small>
+              {{/if}}
+            </div>
+          </div>
+
+          <div class="mb-3 row">
+            <label for="policy-method-{{this.model.form.uuid}}" id="label-policy-method-{{this.model.form.uuid}}"
+                   class="col-sm-3 col-form-label">Policy HTTP Method</label>
+            <div class="col-sm-9">
+              <select class="form-select" id="policy-method-{{this.model.form.uuid}}"
+                      {{ on "change" this.updatePolicyMethod }}
+                      aria-describedby="label-policy-method-{{this.model.form.uuid}}">
+                <option value="POST" selected={{this.isEqual this.model.policyMethod "POST"}}>POST</option>
+                <option value="PUT" selected={{this.isEqual this.model.policyMethod "PUT"}}>PUT</option>
+                <option value="GET" selected={{this.isEqual this.model.policyMethod "GET"}}>GET</option>
+                <option value="PATCH" selected={{this.isEqual this.model.policyMethod "PATCH"}}>PATCH</option>
+                <option value="DELETE" selected={{this.isEqual this.model.policyMethod "DELETE"}}>DELETE</option>
+              </select>
+              {{#if this.policyMethodError }}
+                <small class="text-danger">{{ this.policyMethodError }}</small>
+              {{/if}}
+            </div>
+          </div>
+
+          <div class="mb-3 row">
+            <label for="policy-content-type-{{this.model.form.uuid}}" id="label-policy-content-type-{{this.model.form.uuid}}"
+                   class="col-sm-3 col-form-label">Policy Content-Type</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="policy-content-type-{{this.model.form.uuid}}" placeholder="application/ld+json"
+                     value={{this.model.policyContentType}} {{ on "change" this.updatePolicyContentType }}
+                     aria-describedby="label-policy-content-type-{{this.model.form.uuid}}" />
+              {{#if this.policyContentTypeError }}
+                <small class="text-danger">{{ this.policyContentTypeError }}</small>
+              {{/if}}
+            </div>
+          </div>
+
+          <hr>
+
           <SortableObjects @sortableObjectList={{this.fields}} @enableSort={{true}} @useSwap={{false}}
                            @inPlace={{false}} @sortingScope={{"formFields"}}>
             {{#each this.fields as |field|}}

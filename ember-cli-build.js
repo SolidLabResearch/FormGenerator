@@ -8,6 +8,20 @@ module.exports = function (defaults) {
       bootstrapVersion: 5,
       importBootstrapCSS: true,
     },
+    autoImport: {
+      webpack: {
+        node: {
+          global: true,
+        },
+        resolve: {
+          fallback: {
+            fs: false,
+            crypto: false,
+            path: false,
+          },
+        },
+      },
+    },
   });
 
   // Use `app.import` to add additional libraries to the generated
