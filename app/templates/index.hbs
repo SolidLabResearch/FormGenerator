@@ -179,6 +179,18 @@
 
           <hr>
 
+          <div class="mb-3 row">
+            <label for="policy-redirect-url-{{this.model.form.uuid}}" id="label-policy-redirect-url-{{this.model.form.uuid}}"
+                   class="col-sm-3 col-form-label">Policy Redirect URL</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control" id="policy-redirect-url-{{this.model.form.uuid}}" placeholder="https://formgenerator.smessie.com"
+                     value={{this.model.policyRedirectUrl}} {{ on "change" this.updatePolicyRedirectUrl }}
+                     aria-describedby="label-policy-redirect-url-{{this.model.form.uuid}}" />
+            </div>
+          </div>
+
+          <hr>
+
           <SortableObjects @sortableObjectList={{this.fields}} @enableSort={{true}} @useSwap={{false}}
                            @inPlace={{false}} @sortingScope={{"formFields"}}>
             {{#each this.fields as |field|}}

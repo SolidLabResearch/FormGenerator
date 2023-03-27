@@ -29,6 +29,7 @@ export default class IndexRoute extends Route {
   @tracked policyURL = '';
   @tracked policyMethod = '';
   @tracked policyContentType = '';
+  @tracked policyRedirectUrl = '';
 
   async model({ form }) {
     await this.solidAuth.ensureLogin();
@@ -240,8 +241,8 @@ export default class IndexRoute extends Route {
         ?id pol:policy ?policy .
         ?policy a fno:Execution .
         ?policy fno:executes ?executionTarget .
-        ?policy ex:method ?method .
         ?policy ex:url ?url .
+        OPTIONAL { ?policy ex:method ?method } .
         OPTIONAL { ?policy ex:contentType ?contentType } .
       }
       `;
@@ -261,8 +262,8 @@ export default class IndexRoute extends Route {
       const policies = bindings.map((row) => {
         return {
           executionTarget: row.get('executionTarget').value,
-          method: row.get('method').value,
           url: row.get('url').value,
+          method: row.get('method')?.value,
           contentType: row.get('contentType')?.value,
         };
       });
@@ -273,6 +274,8 @@ export default class IndexRoute extends Route {
           this.policyURL = policy.url;
           this.policyMethod = policy.method;
           this.policyContentType = policy.contentType;
+        } else if (policy.executionTarget === 'http://example.org/redirect') {
+          this.policyRedirectUrl = policy.url;
         }
       }
     }

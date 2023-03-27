@@ -196,18 +196,31 @@ export default class IndexController extends Controller {
       (rule) => !this.isEventSubmitRule(rule, matches.prefixes)
     );
     matches.rules.push(`
-    {
-      ?id ex:event ex:Submit.
-    } => {
-      ex:HttpPolicy pol:policy [
-        a fno:Execution ;
-        fno:executes ex:httpRequest ;
-        ex:method "${this.model.policyMethod}" ;
-        ex:url <${this.model.policyURL}> ;
-        ex:contentType "${this.model.policyContentType}"
-      ] .
-    } .
+{
+  ?id ex:event ex:Submit.
+} => {
+  ex:HttpPolicy pol:policy [
+    a fno:Execution ;
+    fno:executes ex:httpRequest ;
+    ex:method "${this.model.policyMethod}" ;
+    ex:url <${this.model.policyURL}> ;
+    ex:contentType "${this.model.policyContentType}"
+  ] .
+} .
     `);
+    if (this.model.policyRedirectUrl) {
+      matches.rules.push(`
+{
+  ?id ex:event ex:Submit.
+} => {
+  ex:RedirectPolicy pol:policy [
+    a fno:Execution ;
+    fno:executes ex:redirect ;
+    ex:url <${this.model.policyRedirectUrl}>
+  ] .
+} .
+      `);
+    }
     matches.prefixes = this.addIfNotIncluded(
       matches.prefixes,
       'ex',
@@ -583,5 +596,10 @@ export default class IndexController extends Controller {
   @action
   updatePolicyContentType(event) {
     this.model.policyContentType = event.target.value?.trim();
+  }
+
+  @action
+  updatePolicyRedirectUrl(event) {
+    this.model.policyRedirectUrl = event.target.value?.trim();
   }
 }
