@@ -197,14 +197,15 @@ export default class IndexController extends Controller {
     );
     matches.rules.push(`
     {
-      _:id ex:event ex:Submit.
+      ?id ex:event ex:Submit.
     } => {
-      ex:HttpPolicy pol:policy ex:Pol .
-      ex:Pol a fno:Execution ;
+      ex:HttpPolicy pol:policy [
+        a fno:Execution ;
         fno:executes ex:httpRequest ;
         ex:method "${this.model.policyMethod}" ;
         ex:url <${this.model.policyURL}> ;
-        ex:contentType "${this.model.policyContentType}" .
+        ex:contentType "${this.model.policyContentType}"
+      ] .
     } .
     `);
     matches.prefixes = this.addIfNotIncluded(
