@@ -4,7 +4,7 @@ import { v4 as uuid } from 'uuid';
 import { namedNode } from 'rdflib';
 import { tracked } from '@glimmer/tracking';
 import { n3reasoner } from 'eyereasoner';
-import { QueryEngine } from '@comunica/query-sparql-solid';
+import { QueryEngine } from '@comunica/query-sparql';
 
 export default class IndexRoute extends Route {
   queryParams = {

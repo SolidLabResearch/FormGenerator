@@ -23,7 +23,7 @@
     "test:ember": "ember test"
   },
   "devDependencies": {
-    "@comunica/query-sparql-solid": "^2.4.0",
+    "@comunica/query-sparql": "^2.6.9",
     "@ember/optional-features": "^2.0.0",
     "@ember/test-helpers": "^2.8.1",
     "@fortawesome/ember-fontawesome": "^0.4.0",
