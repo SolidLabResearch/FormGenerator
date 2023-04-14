@@ -205,7 +205,7 @@ export default class IndexRoute extends Route {
     });
 
     // Add N3 rules.
-    rules.forEach((match) => {
+    rules?.forEach((match) => {
       text += match;
     });
 
@@ -220,7 +220,7 @@ export default class IndexRoute extends Route {
   }
 
   async fillInFormWithSubmitEventPolicy(matches) {
-    for (const rule of matches.rules) {
+    for (const rule of matches?.rules || []) {
       const options = { blogic: false, outputType: 'string' };
       const query = `${
         matches.prefixes ? matches.prefixes.join('\n') : ''
