@@ -159,7 +159,8 @@ export default class IndexRoute extends Route {
     const prefixes = text.match(prefixRegex);
 
     // Match N3 rules.
-    const rulesRegex = /\{[^{}]*}\s*(=>|[^\s{}:]*:implies)\s*{[^{}]*}\s*\./g;
+    const rulesRegex =
+      /\{[^{}]*}\s*(=>|[^\s{}:]*:implies|<http:\/\/www.w3.org\/2000\/10\/swap\/log#implies>)\s*{[^{}]*}\s*\./g;
     const rules = text.match(rulesRegex);
 
     // Remove N3 rules.
