@@ -522,12 +522,19 @@ export default class IndexController extends Controller {
     this.model.supportedClass?.destroy();
   }
 
+  clearPolicyInfo() {
+    this.model.policyURL = '';
+    this.model.policyContentType = '';
+    this.model.policyRedirectUrl = '';
+  }
+
   @action
   async loadForm(event) {
     event.preventDefault();
     document.getElementById('load-btn').disabled = true;
     document.getElementById('load-btn').innerText = 'Loading...';
 
+    this.clearPolicyInfo();
     this.clearForm();
 
     this.form = this.model.loadedFormUri;
