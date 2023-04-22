@@ -144,9 +144,12 @@ export default class IndexRoute extends Route {
   async removeN3RulesFromResource() {
     const fetch = this.solidAuth.session.fetch;
 
-    const response = await fetch(this.loadedFormUri, {
-      method: 'GET',
-    });
+    const response = await fetch(
+      new URL(this.loadedFormUri, await this.solidAuth.podBase).href,
+      {
+        method: 'GET',
+      }
+    );
 
     // Get content-type.
     const contentType = response.headers.get('content-type');
@@ -169,13 +172,16 @@ export default class IndexRoute extends Route {
     });
 
     // Save resource without N3 rules.
-    await fetch(this.loadedFormUri, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': contentType,
-      },
-      body: text,
-    });
+    await fetch(
+      new URL(this.loadedFormUri, await this.solidAuth.podBase).href,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': contentType,
+        },
+        body: text,
+      }
+    );
 
     return { rules, prefixes };
   }
@@ -184,9 +190,12 @@ export default class IndexRoute extends Route {
     const { rules, prefixes } = matches;
     const fetch = this.solidAuth.session.fetch;
 
-    const response = await fetch(this.loadedFormUri, {
-      method: 'GET',
-    });
+    const response = await fetch(
+      new URL(this.loadedFormUri, await this.solidAuth.podBase).href,
+      {
+        method: 'GET',
+      }
+    );
 
     // Get content-type.
     const contentType = response.headers.get('content-type');
@@ -211,13 +220,16 @@ export default class IndexRoute extends Route {
     });
 
     // Save resource with N3 rules.
-    await fetch(this.loadedFormUri, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': contentType,
-      },
-      body: text,
-    });
+    await fetch(
+      new URL(this.loadedFormUri, await this.solidAuth.podBase).href,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': contentType,
+        },
+        body: text,
+      }
+    );
   }
 
   async fillInFormWithSubmitEventPolicy(matches) {
@@ -253,7 +265,8 @@ export default class IndexRoute extends Route {
               type: 'stringSource',
               value: reasonerResult,
               mediaType: 'text/n3',
-              baseIRI: this.loadedFormUri,
+              baseIRI: new URL(this.loadedFormUri, await this.solidAuth.podBase)
+                .href,
             },
           ],
         })
