@@ -40,7 +40,10 @@ export default class IndexRoute extends Route {
     await this.fetchGraphs(form !== null);
 
     if (form) {
-      this.loadForm();
+      const loadedForm = this.loadForm();
+      if (!loadedForm) {
+        this.initiateNewShaclForm();
+      }
     } else {
       this.initiateNewShaclForm();
     }
@@ -139,6 +142,7 @@ export default class IndexRoute extends Route {
     }
     console.log('loaded form', this.form);
     console.log('loaded supportedClass', this.supportedClass);
+    return this.form !== undefined;
   }
 
   async removeN3RulesFromResource() {
