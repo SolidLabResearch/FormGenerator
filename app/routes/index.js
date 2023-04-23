@@ -25,9 +25,9 @@ export default class IndexRoute extends Route {
 
   engine = new QueryEngine();
 
-  @tracked policyType = '';
+  @tracked policyType = 'HTTP';
   @tracked policyURL = '';
-  @tracked policyMethod = '';
+  @tracked policyMethod = 'POST';
   @tracked policyContentType = '';
   @tracked policyRedirectUrl = '';
 

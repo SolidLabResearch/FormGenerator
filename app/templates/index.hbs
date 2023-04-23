@@ -140,7 +140,7 @@
                      value={{this.model.policyURL}} {{ on "change" this.updatePolicyURL }}
                      aria-describedby="label-policy-url-{{this.model.form.uuid}}" />
               {{#if this.policyURLError }}
-                <small class="text-danger">{{ this.policyTypeError }}</small>
+                <small class="text-danger">{{ this.policyURLError }}</small>
               {{/if}}
             </div>
           </div>

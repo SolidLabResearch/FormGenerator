@@ -248,7 +248,7 @@ export default class IndexController extends Controller {
   validateInputs() {
     let valid = true;
 
-    if (!this.model.form.binding?.value.trim()) {
+    if (!this.model.form?.binding?.value.trim()) {
       this.model.form.error = 'Please fill in a binding.';
     }
     valid &= !this.model.form.error;
@@ -587,6 +587,7 @@ export default class IndexController extends Controller {
 
   @action
   updatePolicyType(event) {
+    console.log(event.target.value?.trim());
     this.model.policyType = event.target.value?.trim();
   }
 
