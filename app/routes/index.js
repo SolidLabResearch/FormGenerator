@@ -155,6 +155,10 @@ export default class IndexRoute extends Route {
       }
     );
 
+    if (!response.ok) {
+      return { rules: [], prefixes: [] };
+    }
+
     // Get content-type.
     const contentType = response.headers.get('content-type');
 
@@ -187,12 +191,17 @@ export default class IndexRoute extends Route {
       }
     );
 
-    return { rules, prefixes };
+    return { rules: rules || [], prefixes: prefixes || [] };
   }
 
   async addN3RulesToResource(matches) {
     const { rules, prefixes } = matches;
     const fetch = this.solidAuth.session.fetch;
+
+    if (!rules) {
+      // No rules to add.
+      return;
+    }
 
     const response = await fetch(
       new URL(this.loadedFormUri, await this.solidAuth.podBase).href,
@@ -200,6 +209,10 @@ export default class IndexRoute extends Route {
         method: 'GET',
       }
     );
+
+    if (!response.ok) {
+      return;
+    }
 
     // Get content-type.
     const contentType = response.headers.get('content-type');
@@ -214,13 +227,13 @@ export default class IndexRoute extends Route {
     // Add prefixes in front if not already present.
     prefixes?.forEach((prefix) => {
       if (!matchedPrefixes?.includes(prefix)) {
-        text = prefix + text;
+        text = prefix + '\n' + text;
       }
     });
 
     // Add N3 rules.
     rules?.forEach((match) => {
-      text += match;
+      text += match + '\n';
     });
 
     // Save resource with N3 rules.
