@@ -112,7 +112,9 @@ export default class IndexController extends Controller {
         this.fields = [...this.fields, field];
       } else if (this.model.vocabulary === 'http://www.w3.org/ns/ui#') {
         const field = this.store.create('ui-form-field', {});
-        field.setRdfType(this.getSolidUiRdfTypeFromWidgetType(type));
+        if (type !== 'string') {
+          field.setRdfType(this.getSolidUiRdfTypeFromWidgetType(type));
+        }
         field.widget = type;
         field.isSelect = type === 'dropdown';
         if (field.isSelect) {
@@ -449,7 +451,9 @@ export default class IndexController extends Controller {
   }
 
   getSolidUiRdfTypeFromWidgetType(type) {
+    console.log(type);
     if (type === 'string') {
+      console.log('here');
       return namedNode('http://www.w3.org/ns/ui#SingleLineTextField');
     } else if (type === 'textarea') {
       return namedNode('http://www.w3.org/ns/ui#MultiLineTextField');
