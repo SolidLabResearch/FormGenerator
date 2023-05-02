@@ -250,6 +250,22 @@ export default class IndexRoute extends Route {
   }
 
   async fillInFormWithSubmitEventPolicy(matches) {
+    matches.prefixes = this.addIfNotIncluded(
+      matches.prefixes,
+      'ex',
+      'http://example.org/'
+    );
+    matches.prefixes = this.addIfNotIncluded(
+      matches.prefixes,
+      'fno',
+      'https://w3id.org/function/ontology#'
+    );
+    matches.prefixes = this.addIfNotIncluded(
+      matches.prefixes,
+      'pol',
+      'https://www.example.org/ns/policy#'
+    );
+
     for (const rule of matches?.rules || []) {
       const options = { blogic: false, outputType: 'string' };
       const query = `${
@@ -309,5 +325,18 @@ export default class IndexRoute extends Route {
         }
       }
     }
+  }
+
+  addIfNotIncluded(prefixes, prefix, url) {
+    let alreadyIncluded = false;
+    prefixes.forEach((p) => {
+      if (p.includes(prefix) && p.includes(url)) {
+        alreadyIncluded = true;
+      }
+    });
+    if (!alreadyIncluded) {
+      prefixes.push(`@prefix ${prefix}: <${url}> .`);
+    }
+    return prefixes;
   }
 }

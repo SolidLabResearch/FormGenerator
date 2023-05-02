@@ -223,17 +223,17 @@ export default class IndexController extends Controller {
 } .
       `);
     }
-    matches.prefixes = this.addIfNotIncluded(
+    matches.prefixes = this.model.addIfNotIncluded(
       matches.prefixes,
       'ex',
       'http://example.org/'
     );
-    matches.prefixes = this.addIfNotIncluded(
+    matches.prefixes = this.model.addIfNotIncluded(
       matches.prefixes,
       'fno',
       'https://w3id.org/function/ontology#'
     );
-    matches.prefixes = this.addIfNotIncluded(
+    matches.prefixes = this.model.addIfNotIncluded(
       matches.prefixes,
       'pol',
       'https://www.example.org/ns/policy#'
@@ -575,18 +575,6 @@ export default class IndexController extends Controller {
       options
     );
     return reasonerResult.length > 0;
-  }
-  addIfNotIncluded(prefixes, prefix, url) {
-    let alreadyIncluded = false;
-    prefixes.forEach((p) => {
-      if (p.includes(prefix) && p.includes(url)) {
-        alreadyIncluded = true;
-      }
-    });
-    if (!alreadyIncluded) {
-      prefixes.push(`@prefix ${prefix}: <${url}> .`);
-    }
-    return prefixes;
   }
 
   @action
