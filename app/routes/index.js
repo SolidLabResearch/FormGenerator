@@ -79,7 +79,7 @@ export default class IndexRoute extends Route {
 
   async fetchGraphs(removeN3Rules = false) {
     // Remove all N3 rules from the resource.
-    let matches;
+    let matches = { rules: [], prefixes: [] };
     if (removeN3Rules) {
       matches = await this.removeN3RulesFromResource();
     }
