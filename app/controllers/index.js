@@ -361,7 +361,9 @@ export default class IndexController extends Controller {
   async replacePrefixInBinding(binding) {
     // Do call to prefix.cc to get the full URI
     const [prefix, suffix] = binding.split(':');
-    const response = await fetch(`https://prefix.cc/${prefix}.file.json`);
+    const response = await fetch(
+      `https://prefixcc-proxy.smessie.com/${prefix}.file.json`
+    );
     const json = await response.json();
     const uri = json[prefix];
     if (uri) {
