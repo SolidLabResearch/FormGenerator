@@ -1,5 +1,5 @@
-var __ember_auto_import__;(()=>{var e,r={71023:(e,r,t)=>{var o,n
-e.exports=(o=_eai_d,n=_eai_r,window.emberAutoImportDynamic=function(e){return 1===arguments.length?n("_eai_dyn_"+e):n("_eai_dynt_"+e)(Array.prototype.slice.call(arguments,1))},window.emberAutoImportSync=function(e){return n("_eai_sync_"+e)(Array.prototype.slice.call(arguments,1))},o("@comunica/query-sparql",[],(function(){return t(88146)})),o("@inrupt/solid-client-authn-browser",[],(function(){return t(79250)})),o("@popperjs/core",[],(function(){return t(51953)})),o("ember-focus-trap/modifiers/focus-trap.js",[],(function(){return t(44836)})),o("eyereasoner",[],(function(){return t(96428)})),o("rdflib",[],(function(){return t(8907)})),o("rsvp",[],(function(){return t(75969)})),void o("uuid",[],(function(){return t(11909)})))},51707:function(e,r){window._eai_r=require,window._eai_d=define},84927:e=>{"use strict"
+var __ember_auto_import__;(()=>{var e,r={6132:(e,r,t)=>{var o,n
+e.exports=(o=_eai_d,n=_eai_r,window.emberAutoImportDynamic=function(e){return 1===arguments.length?n("_eai_dyn_"+e):n("_eai_dynt_"+e)(Array.prototype.slice.call(arguments,1))},window.emberAutoImportSync=function(e){return n("_eai_sync_"+e)(Array.prototype.slice.call(arguments,1))},o("@comunica/query-sparql",[],(function(){return t(88146)})),o("@inrupt/solid-client-authn-browser",[],(function(){return t(79250)})),o("@popperjs/core",[],(function(){return t(51953)})),o("ember-focus-trap/modifiers/focus-trap.js",[],(function(){return t(44836)})),o("eyereasoner",[],(function(){return t(96428)})),o("rdflib",[],(function(){return t(8907)})),o("rsvp",[],(function(){return t(75969)})),void o("uuid",[],(function(){return t(11909)})))},38293:function(e,r){window._eai_r=require,window._eai_d=define},84927:e=>{"use strict"
 e.exports=require("@ember/modifier")},97670:()=>{},99283:()=>{},43838:()=>{},15475:()=>{},82010:()=>{},6485:()=>{}},t={}
 function o(e){var n=t[e]
 if(void 0!==n)return n.exports
@@ -18,6 +18,6 @@ var r=(r,t)=>{var n,i,[u,a,l]=t,c=0
 if(u.some((r=>0!==e[r]))){for(n in a)o.o(a,n)&&(o.m[n]=a[n])
 if(l)var d=l(o)}for(r&&r(t);c<u.length;c++)i=u[c],o.o(e,i)&&e[i]&&e[i][0](),e[i]=0
 return o.O(d)},t=globalThis.webpackChunk_ember_auto_import_=globalThis.webpackChunk_ember_auto_import_||[]
-t.forEach(r.bind(null,0)),t.push=r.bind(null,t.push.bind(t))})(),o.O(void 0,[808],(()=>o(51707)))
-var n=o.O(void 0,[808],(()=>o(71023)))
+t.forEach(r.bind(null,0)),t.push=r.bind(null,t.push.bind(t))})(),o.O(void 0,[808],(()=>o(38293)))
+var n=o.O(void 0,[808],(()=>o(6132)))
 n=o.O(n),__ember_auto_import__=n})()
