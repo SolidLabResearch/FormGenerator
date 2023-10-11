@@ -4,7 +4,7 @@ module.exports = function (environment) {
   let ENV = {
     modulePrefix: 'form-generator',
     environment,
-    rootURL: '/',
+    rootURL: environment === 'production' ? '/FormGenerator/' : '/',
     locationType: 'history',
     rdfStore: {
       name: 'store',
