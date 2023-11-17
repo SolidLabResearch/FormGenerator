@@ -2,10 +2,10 @@
   "name": "form-generator",
   "version": "0.0.0",
   "private": true,
-  "description": "Small description for form-generator goes here",
-  "repository": "",
+  "description": "A form generator app with Solid - Google Forms but the Solid way",
+  "repository": "https://github.com/SolidLabResearch/FormGenerator",
   "license": "MIT",
-  "author": "",
+  "author": "Ieben Smessaert",
   "directories": {
     "doc": "doc",
     "test": "tests"

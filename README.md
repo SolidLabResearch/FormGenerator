@@ -1,4 +1,4 @@
-# form-generator
+# FormGenerator
 
 A form generator app with Solid - Google Forms but the Solid way.
 
@@ -7,7 +7,7 @@ create form definitions and share them with other users. The generated form defi
 and can then be used together with a form renderer to render the form.
 
 Such a form renderer is not part of this repository, but can be found
-at [phochste/FormViewer](https://github.com/phochste/FormViewer).
+at [SolidLabResearch/FormViewer](https://github.com/SolidLabResearch/FormViewer), [SolidLabResearch/FormRenderer](https://github.com/SolidLabResearch/FormRenderer), or [SolidLabResearch/FormCli](https://github.com/SolidLabResearch/FormCli).
 
 This application functions as the solution for
 the [[SolidLabResearch/Challenges#64] Drag & drop form builder app to build a basic RDF form definition](https://github.com/SolidLabResearch/Challenges/issues/64)
@@ -15,7 +15,7 @@ challenge which is part of
 the [[SolidLabResearch/Challenges#19] Solid basic form builder (Google Forms but the Solid way)](https://github.com/SolidLabResearch/Challenges/issues/19)
 scenario.
 
-A live version of this application can be found at [https://formgenerator.smessie.com/](https://formgenerator.smessie.com/).
+A live version of this application can be found at [http://solidlabresearch.github.io/FormGenerator/](http://solidlabresearch.github.io/FormGenerator/).
 
 ## Prerequisites
 
@@ -29,7 +29,7 @@ You will need the following things properly installed on your computer.
 ## Installation
 
 * `git clone <repository-url>` this repository
-* `cd form-generator`
+* `cd FormGenerator`
 * `npm install`
 
 ## Running / Development
