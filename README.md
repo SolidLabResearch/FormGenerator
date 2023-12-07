@@ -2,6 +2,8 @@
 
 A form generator app with Solid - Google Forms but the Solid way.
 
+[![DOI](https://zenodo.org/badge/527624255.svg)](https://zenodo.org/doi/10.5281/zenodo.10285191)
+
 This application functions as a proof of concept for the Solid ecosystem. It is a form generator that allows users to
 create form definitions and share them with other users. The generated form definition as RDF is stored in a user's Pod
 and can then be used together with a form renderer to render the form.
