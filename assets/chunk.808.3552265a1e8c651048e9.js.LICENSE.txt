@@ -1,0 +1,118 @@
+/*!
+ * @overview RSVP - a tiny implementation of Promises/A+.
+ * @copyright Copyright (c) 2016 Yehuda Katz, Tom Dale, Stefan Penner and contributors
+ * @license   Licensed under MIT license
+ *            See https://raw.githubusercontent.com/tildeio/rsvp.js/master/LICENSE
+ * @version   4.8.4+ff10049b
+ */
+
+/*!
+ * The buffer module from node.js, for the browser.
+ *
+ * @author   Feross Aboukhadijeh <http://feross.org>
+ * @license  MIT
+ */
+
+/*!
+ * The buffer module from node.js, for the browser.
+ *
+ * @author   Feross Aboukhadijeh <https://feross.org>
+ * @license  MIT
+ */
+
+/*!
+* focus-trap 6.9.4
+* @license MIT, https://github.com/focus-trap/focus-trap/blob/master/LICENSE
+*/
+
+/*! (c) Stefan Thomas | https://github.com/bitcoinjs/bitcoinjs-lib
+ */
+
+/*! (c) Tom Wu | http://www-cs-students.stanford.edu/~tjw/jsbn/
+ */
+
+/*! Mike Samuel (c) 2009 | code.google.com/p/json-sans-eval
+ */
+
+/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! queue-microtask. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
+
+/*! safe-buffer. MIT License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/**
+ * A JavaScript implementation of the JSON-LD API.
+ *
+ * @author Dave Longley
+ *
+ * @license BSD 3-Clause License
+ * Copyright (c) 2011-2019 Digital Bazaar, Inc.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Digital Bazaar, Inc. nor the names of its
+ * contributors may be used to endorse or promote products derived from
+ * this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ * IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ * TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+/**
+ * Character class utilities for XML NS 1.0 edition 3.
+ *
+ * @author Louis-Dominique Dubeau
+ * @license MIT
+ * @copyright Louis-Dominique Dubeau
+ */
+
+/**
+ * Character classes and associated utilities for the 2nd edition of XML 1.1.
+ *
+ * @author Louis-Dominique Dubeau
+ * @license MIT
+ * @copyright Louis-Dominique Dubeau
+ */
+
+/**
+ * Character classes and associated utilities for the 5th edition of XML 1.0.
+ *
+ * @author Louis-Dominique Dubeau
+ * @license MIT
+ * @copyright Louis-Dominique Dubeau
+ */
+
+/**
+ * Removes the @preserve keywords from expanded result of framing.
+ *
+ * @param input the framed, framed output.
+ * @param options the framing options used.
+ *
+ * @return the resulting output.
+ */
+
+// disallow aliasing @context and @preserve
+
+// remove @preserve
+
+// remove @preserve from results
