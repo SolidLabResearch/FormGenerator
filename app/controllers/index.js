@@ -135,7 +135,7 @@ export default class IndexController extends Controller {
     this.model.fields.forEach((field) => {
       // Find the original field.
       const originalField = this.model.originalFields.find(
-        (f) => f.uuid === field.uuid
+        (f) => f.uuid === field.uuid,
       );
       if (originalField) {
         // Check if the field has been updated.
@@ -194,12 +194,12 @@ export default class IndexController extends Controller {
             ${this.stringifyFormSubject(
               this.model.loadedFormUri,
               this.model.formTargetClass,
-              this.model.fields
+              this.model.fields,
             )}
             ${this.stringifyFields(
               this.model.loadedFormUri,
               this.model.formTargetClass,
-              fieldsToInsert
+              fieldsToInsert,
             )}
           }`;
     if (this.model.newForm) {
@@ -210,12 +210,12 @@ export default class IndexController extends Controller {
             ${this.stringifyFormSubject(
               this.model.loadedFormUri,
               this.model.originalFormTargetClass,
-              this.model.originalFields
+              this.model.originalFields,
             )}
             ${this.stringifyFields(
               this.model.loadedFormUri,
               this.model.originalFormTargetClass,
-              fieldsToDelete
+              fieldsToDelete,
             )}
           } .
         `;
@@ -243,8 +243,8 @@ export default class IndexController extends Controller {
     // Remove all N3 rules that are Submit event policies as we are regenerating them after this.
     const keepRules = await Promise.all(
       matches.rules.map(
-        async (rule) => await this.isEventSubmitRule(rule, matches.prefixes)
-      )
+        async (rule) => await this.isEventSubmitRule(rule, matches.prefixes),
+      ),
     );
     matches.rules = matches.rules.filter((rule, index) => !keepRules[index]);
 
@@ -257,17 +257,17 @@ export default class IndexController extends Controller {
     matches.prefixes = this.model.addIfNotIncluded(
       matches.prefixes,
       'ex',
-      'http://example.org/'
+      'http://example.org/',
     );
     matches.prefixes = this.model.addIfNotIncluded(
       matches.prefixes,
       'fno',
-      'https://w3id.org/function/ontology#'
+      'https://w3id.org/function/ontology#',
     );
     matches.prefixes = this.model.addIfNotIncluded(
       matches.prefixes,
       'pol',
-      'https://www.example.org/ns/policy#'
+      'https://www.example.org/ns/policy#',
     );
 
     // Re-add the N3 rules to the resource.
@@ -277,7 +277,7 @@ export default class IndexController extends Controller {
       // On successful save, update the original fields to the current fields.
       this.model.originalFields = JSON.parse(JSON.stringify(this.model.fields));
       this.model.originalPolicies = JSON.parse(
-        JSON.stringify(this.model.policies)
+        JSON.stringify(this.model.policies),
       );
       this.model.originalFormTargetClass = this.model.formTargetClass;
     } else {
@@ -418,7 +418,7 @@ export default class IndexController extends Controller {
     // Do call to prefix.cc to get the full URI
     const [prefix, suffix] = binding.split(':');
     const response = await fetch(
-      `https://prefixcc-proxy.smessie.com/${prefix}.file.json`
+      `https://prefixcc-proxy.smessie.com/${prefix}.file.json`,
     );
     const json = await response.json();
     const uri = json[prefix];
@@ -551,7 +551,7 @@ export default class IndexController extends Controller {
     const reasonerResult = await n3reasoner(
       '?id <http://example.org/event> <http://example.org/Submit> .',
       query,
-      options
+      options,
     );
     return reasonerResult.length > 0;
   }
@@ -585,7 +585,7 @@ export default class IndexController extends Controller {
   removePolicy(policy, event) {
     event?.preventDefault();
     this.model.policies = this.model.policies.filter(
-      (p) => p.uuid !== policy.uuid
+      (p) => p.uuid !== policy.uuid,
     );
   }
 

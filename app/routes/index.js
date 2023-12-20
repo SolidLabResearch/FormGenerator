@@ -47,7 +47,7 @@ export default class IndexRoute extends Route {
       if (this.solidAuth.loggedIn) {
         const storageRoot = await findStorageRoot(
           this.solidAuth.loggedIn,
-          fetch
+          fetch,
         );
         this.loadedFormUri = `${storageRoot}private/tests/forms/${uuid()}.n3#${uuid()}`;
       } else {
@@ -102,7 +102,7 @@ export default class IndexRoute extends Route {
     const reasonerResult = await n3reasoner(
       `?id <http://example.org/event> <http://example.org/Submit> .`,
       content,
-      options
+      options,
     );
 
     // Parse policies.
@@ -161,7 +161,7 @@ export default class IndexRoute extends Route {
       new URL(this.loadedFormUri /*, await this.solidAuth.podBase*/).href,
       {
         method: 'GET',
-      }
+      },
     );
 
     if (!response.ok) {
@@ -373,7 +373,7 @@ export default class IndexRoute extends Route {
         uri: row.get('field').value,
         type: row.get('type')?.value,
         widget: this.shaclTypeToWidget(
-          row.get('type')?.value || row.get('nodeKind')?.value
+          row.get('type')?.value || row.get('nodeKind')?.value,
         ),
         nodeKind: row.get('nodeKind')?.value,
         property: row.get('property')?.value,
@@ -556,7 +556,7 @@ export default class IndexRoute extends Route {
       setTimeout(() => {
         this.fields = fields;
         resolve();
-      }, 0)
+      }, 0),
     );
   }
 
@@ -567,7 +567,7 @@ export default class IndexRoute extends Route {
       setTimeout(() => {
         this.policies = policies;
         resolve();
-      }, 0)
+      }, 0),
     );
   }
 
