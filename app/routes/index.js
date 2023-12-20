@@ -1,10 +1,11 @@
 import Route from '@ember/routing/route';
-import { inject as service } from '@ember/service';
 import { v4 as uuid } from 'uuid';
-import { namedNode } from 'rdflib';
 import { tracked } from '@glimmer/tracking';
 import { n3reasoner } from 'eyereasoner';
 import { QueryEngine } from '@comunica/query-sparql';
+import { fetch } from '@smessie/solid-client-authn-browser';
+import { findStorageRoot } from 'solid-storage-root';
+import { service } from '@ember/service';
 
 export default class IndexRoute extends Route {
   queryParams = {
@@ -14,10 +15,6 @@ export default class IndexRoute extends Route {
   };
 
   @service solidAuth;
-  @service store;
-
-  supportedClass;
-  @tracked form;
 
   @tracked loadedFormUri;
 
@@ -25,131 +22,143 @@ export default class IndexRoute extends Route {
 
   engine = new QueryEngine();
 
-  @tracked policyType = 'HTTP';
-  @tracked policyURL = '';
-  @tracked policyMethod = 'POST';
-  @tracked policyContentType = '';
-  @tracked policyRedirectUrl = '';
+  originalFields = [];
+  originalPolicies = [];
+  originalFormTargetClass = '';
+  @tracked fields = [];
+  @tracked policies = [];
+  @tracked formTargetClass;
+  @tracked formTargetClassError = '';
+
+  newForm = true;
+
+  @tracked success = null;
+  @tracked error = null;
+  @tracked info = null;
 
   async model({ form }) {
-    await this.solidAuth.ensureLogin();
-
-    console.log('editing form', form);
-    this.configureStorageLocations(form);
-
-    await this.fetchGraphs(form !== null);
-
     if (form) {
-      const loadedForm = this.loadForm();
-      if (!loadedForm) {
-        this.initiateNewShaclForm();
+      const loadedForm = this.loadForm(form);
+      if (loadedForm) {
+        this.loadedFormUri = form;
       }
     } else {
-      this.initiateNewShaclForm();
+      this.newForm = true;
+      if (this.solidAuth.loggedIn) {
+        const storageRoot = await findStorageRoot(
+          this.solidAuth.loggedIn,
+          fetch
+        );
+        this.loadedFormUri = `${storageRoot}private/tests/forms/${uuid()}.n3#${uuid()}`;
+      } else {
+        this.info =
+          'Log in to use a random location in your Solid pod or manually provide a form URI to get started.';
+      }
     }
     return this;
   }
 
-  configureStorageLocations(form) {
-    const storageLocation = form ? form : `private/tests/forms/${uuid()}.ttl`;
-    this.loadedFormUri = storageLocation;
-    this.store.classForModel('hydra-class').solid.defaultStorageLocation =
-      storageLocation;
-    this.store.classForModel('rdf-form').solid.defaultStorageLocation =
-      storageLocation;
-    this.store.classForModel('rdf-form-field').solid.defaultStorageLocation =
-      storageLocation;
-    this.store.classForModel('rdf-form-option').solid.defaultStorageLocation =
-      storageLocation;
-    this.store.classForModel('ui-form').solid.defaultStorageLocation =
-      storageLocation;
-    this.store.classForModel('ui-form-field').solid.defaultStorageLocation =
-      storageLocation;
-    this.store.classForModel('ui-form-option').solid.defaultStorageLocation =
-      storageLocation;
-    this.store.classForModel('ui-form-choice').solid.defaultStorageLocation =
-      storageLocation;
-    this.store.classForModel('shacl-form').solid.defaultStorageLocation =
-      storageLocation;
-    this.store.classForModel('shacl-form-field').solid.defaultStorageLocation =
-      storageLocation;
-    this.store.classForModel('shacl-form-option').solid.defaultStorageLocation =
-      storageLocation;
-  }
+  async loadForm(formUri) {
+    this.clearForm();
 
-  async fetchGraphs(removeN3Rules = false) {
-    // Remove all N3 rules from the resource.
-    let matches = { rules: [], prefixes: [] };
-    if (removeN3Rules) {
-      matches = await this.removeN3RulesFromResource();
+    if (!formUri) {
+      this.newForm = true;
+      return false;
     }
+    await this.loadPolicies(formUri);
 
-    await this.store.fetchGraphForType('hydra-class', true);
-    await this.store.fetchGraphForType('rdf-form', true);
-    await this.store.fetchGraphForType('rdf-form-field', true);
-    await this.store.fetchGraphForType('rdf-form-option', true);
-    await this.store.fetchGraphForType('ui-form', true);
-    await this.store.fetchGraphForType('ui-form-field', true);
-    await this.store.fetchGraphForType('ui-form-option', true);
-    await this.store.fetchGraphForType('ui-form-choice', true);
-    await this.store.fetchGraphForType('shacl-form', true);
-    await this.store.fetchGraphForType('shacl-form-field', true);
-    await this.store.fetchGraphForType('shacl-form-option', true);
-
-    // Add N3 rules back to the resource.
-    if (removeN3Rules) {
-      await this.addN3RulesToResource(matches);
-    }
-
-    // Fill in the form with submit event policy values.
-    await this.fillInFormWithSubmitEventPolicy(matches);
-  }
-
-  initiateNewRdfForm() {
-    this.supportedClass = this.store.create('hydra-class', {
-      method: 'POST',
-    });
-    this.form = this.store.create('rdf-form', {
-      endpoint: namedNode('https://httpbin.org/post'),
-      supportedClass: this.supportedClass,
-    });
-  }
-
-  initiateNewSolidUiForm(fields) {
-    this.form = this.store.create('ui-form', {
-      fields: fields,
-    });
-  }
-
-  initiateNewShaclForm() {
-    this.form = this.store.create('shacl-form', {});
-  }
-
-  loadForm() {
-    // Try rdf-form vocabulary first.
-    this.supportedClass = this.store.all('hydra-class')[0];
-    this.form = this.store.all('rdf-form')[0];
-    this.vocabulary = 'http://rdf.danielbeeke.nl/form/form-dev.ttl#';
-    if (this.form === undefined) {
-      // Try solid-ui vocabulary.
-      this.form = this.store.all('ui-form')[0];
+    if (await this.loadSolidUiForm(formUri)) {
       this.vocabulary = 'http://www.w3.org/ns/ui#';
-    }
-    if (this.form === undefined) {
-      // Try shacl vocabulary.
-      this.form = this.store.all('shacl-form')[0];
+    } else if (await this.loadShaclForm(formUri)) {
       this.vocabulary = 'http://www.w3.org/ns/shacl#';
+    } else if (await this.loadRdfFormForm(formUri)) {
+      this.vocabulary = 'http://rdf.danielbeeke.nl/form/form-dev.ttl#';
+    } else {
+      this.newForm = true;
+      return false;
     }
-    console.log('loaded form', this.form);
-    console.log('loaded supportedClass', this.supportedClass);
-    return this.form !== undefined;
+    this.newForm = false;
+    this.originalFields = JSON.parse(JSON.stringify(this.fields));
+    this.originalPolicies = JSON.parse(JSON.stringify(this.policies));
+    this.originalFormTargetClass = this.formTargetClass;
+    console.log('Form loaded: ', this.fields);
+    return true;
+  }
+
+  async loadPolicies(formUri) {
+    // Get resource content.
+    const response = await fetch(formUri, {
+      method: 'GET',
+    });
+    if (!response.ok) {
+      this.error = 'Could not load form.';
+      return;
+    }
+    const content = await response.text();
+
+    // Get policies from footprint tasks.
+    const options = { outputType: 'string' };
+    // TODO: We should replace ?id with the actual form URI.
+    const reasonerResult = await n3reasoner(
+      `?id <http://example.org/event> <http://example.org/Submit> .`,
+      content,
+      options
+    );
+
+    // Parse policies.
+    const queryPolicy = `
+      PREFIX ex: <http://example.org/>
+      PREFIX pol: <https://www.example.org/ns/policy#>
+      PREFIX fno: <https://w3id.org/function/ontology#>
+
+      SELECT ?executionTarget ?method ?url ?contentType WHERE {
+        ?id pol:policy ?policy .
+        ?policy a fno:Execution .
+        ?policy fno:executes ?executionTarget .
+        ?policy ex:url ?url .
+        OPTIONAL { ?policy ex:method ?method } .
+        OPTIONAL { ?policy ex:contentType ?contentType } .
+      }
+      `;
+    const bindings = await (
+      await this.engine.queryBindings(queryPolicy, {
+        sources: [
+          {
+            type: 'stringSource',
+            value: reasonerResult,
+            mediaType: 'text/n3',
+            baseIRI: formUri.split('#')[0],
+          },
+        ],
+      })
+    ).toArray();
+
+    this.policies = bindings.map((row) => {
+      return {
+        uuid: uuid(),
+        executionTarget: row.get('executionTarget').value,
+        url: row.get('url').value,
+        method: row.get('method')?.value,
+        contentType: row.get('contentType')?.value,
+      };
+    });
+  }
+
+  clearForm() {
+    this.fields = [];
+    this.policies = [];
+    this.originalFields = [];
+    this.originalPolicies = [];
+    this.formTargetClass = '';
+    this.originalFormTargetClass = '';
+    this.formTargetClassError = '';
+    this.success = null;
+    this.error = null;
   }
 
   async removeN3RulesFromResource() {
-    const fetch = this.solidAuth.session.fetch;
-
     const response = await fetch(
-      new URL(this.loadedFormUri, await this.solidAuth.podBase).href,
+      new URL(this.loadedFormUri /*, await this.solidAuth.podBase*/).href,
       {
         method: 'GET',
       }
@@ -180,42 +189,32 @@ export default class IndexRoute extends Route {
     });
 
     // Save resource without N3 rules.
-    await fetch(
-      new URL(this.loadedFormUri, await this.solidAuth.podBase).href,
-      {
-        method: 'PUT',
-        headers: {
-          'Content-Type': contentType,
-        },
-        body: text,
-      }
-    );
+    await fetch(this.loadedFormUri, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': contentType,
+      },
+      body: text,
+    });
 
     return { rules: rules || [], prefixes: prefixes || [] };
   }
 
   async addN3RulesToResource(matches) {
     const { rules, prefixes } = matches;
-    const fetch = this.solidAuth.session.fetch;
 
     if (!rules) {
       // No rules to add.
-      return;
+      return true;
     }
 
-    const response = await fetch(
-      new URL(this.loadedFormUri, await this.solidAuth.podBase).href,
-      {
-        method: 'GET',
-      }
-    );
+    const response = await fetch(this.loadedFormUri, {
+      method: 'GET',
+    });
 
     if (!response.ok) {
-      return;
+      return false;
     }
-
-    // Get content-type.
-    const contentType = response.headers.get('content-type');
 
     // Get content.
     let text = await response.text();
@@ -237,94 +236,339 @@ export default class IndexRoute extends Route {
     });
 
     // Save resource with N3 rules.
-    await fetch(
-      new URL(this.loadedFormUri, await this.solidAuth.podBase).href,
-      {
-        method: 'PUT',
-        headers: {
-          'Content-Type': contentType,
-        },
-        body: text,
+    const response2 = await fetch(this.loadedFormUri, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'text/n3',
+      },
+      body: text,
+    });
+
+    return response2.ok;
+  }
+
+  async loadSolidUiForm(uri) {
+    const query = `
+      PREFIX ui: <http://www.w3.org/ns/ui#>
+      PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+      SELECT ?targetClass ?type ?field ?property ?label ?from ?required ?multiple ?sequence ?listSubject
+      WHERE {
+        <${uri}> a ui:Form;
+                 ui:parts ?list ;
+                 ui:property ?targetClass .
+        ?list rdf:rest*/rdf:first ?field .
+        ?listSubject rdf:first ?field .
+        ?field a ?type;
+               ui:property ?property.
+        OPTIONAL { ?field ui:label ?label. }
+        OPTIONAL { ?field ui:from ?from. }
+        OPTIONAL { ?field ui:required ?required. }
+        OPTIONAL { ?field ui:multiple ?multiple. }
+        OPTIONAL { ?field ui:sequence ?sequence. }
       }
+    `;
+
+    const bindings = await (
+      await this.engine.queryBindings(query, { sources: [uri], fetch })
+    ).toArray();
+
+    if (!bindings.length) {
+      return false;
+    }
+
+    let formTargetClass;
+    const fields = bindings.map((row) => {
+      formTargetClass = row.get('targetClass').value;
+      return {
+        uuid: uuid(),
+        uri: row.get('field').value,
+        type: row.get('type').value,
+        widget: this.solidUiTypeToWidget(row.get('type').value),
+        property: row.get('property').value,
+        label: row.get('label')?.value,
+        choice: row.get('from')?.value,
+        required: row.get('required')?.value === 'true',
+        multiple: row.get('multiple')?.value === 'true',
+        order: parseInt(row.get('sequence')?.value),
+        listSubject: row.get('listSubject').value,
+        canHavePlaceholder: false,
+        canHaveChoiceBinding: true,
+      };
+    });
+
+    // Sort fields by order
+    fields.sort((a, b) => a.order - b.order);
+
+    // Add options to Choice fields
+    for (const field of fields) {
+      if (field.type === 'http://www.w3.org/ns/ui#Choice') {
+        field.options = [];
+        field.isSelect = true;
+        const query = `
+          PREFIX ui: <http://www.w3.org/ns/ui#>
+          PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+          PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+          SELECT ?value ?label WHERE {
+            ?value a <${field.choice}> .
+            OPTIONAL { ?value skos:prefLabel ?label . }
+          }
+          `;
+
+        const bindings = await (
+          await this.engine.queryBindings(query, { sources: [uri], fetch })
+        ).toArray();
+
+        field.options = bindings.map((row) => {
+          return {
+            uuid: uuid(),
+            property: row.get('value').value,
+            label: row.get('label')?.value,
+          };
+        });
+      }
+    }
+
+    this.formTargetClass = formTargetClass;
+    this.fields = fields;
+
+    return true;
+  }
+
+  async loadShaclForm(uri) {
+    const query = `
+    PREFIX sh: <http://www.w3.org/ns/shacl#>
+
+    SELECT ?targetClass ?type ?field ?nodeKind ?property ?label ?order ?minCount ?maxCount ?in
+    WHERE {
+      <${uri}> a sh:NodeShape;
+               sh:targetClass ?targetClass ;
+               sh:property ?field .
+      ?field a sh:PropertyShape .
+      OPTIONAL { ?field sh:datatype ?type . }
+      OPTIONAL { ?field sh:nodeKind ?nodeKind . }
+      OPTIONAL { ?field sh:path ?property . }
+      OPTIONAL { ?field sh:name ?label . }
+      OPTIONAL { ?field sh:order ?order . }
+      OPTIONAL { ?field sh:minCount ?minCount . }
+      OPTIONAL { ?field sh:maxCount ?maxCount . }
+      OPTIONAL { ?field sh:in ?in . }
+    }`;
+
+    const bindings = await (
+      await this.engine.queryBindings(query, { sources: [uri], fetch })
+    ).toArray();
+
+    console.log('bindings', bindings);
+
+    if (!bindings.length) {
+      return false;
+    }
+
+    let formTargetClass;
+    const fields = bindings.map((row) => {
+      formTargetClass = row.get('targetClass').value;
+      return {
+        uuid: uuid(),
+        uri: row.get('field').value,
+        type: row.get('type')?.value,
+        widget: this.shaclTypeToWidget(
+          row.get('type')?.value || row.get('nodeKind')?.value
+        ),
+        nodeKind: row.get('nodeKind')?.value,
+        property: row.get('property')?.value,
+        label: row.get('label')?.value,
+        order: parseInt(row.get('order')?.value),
+        minCount: parseInt(row.get('minCount')?.value),
+        maxCount: parseInt(row.get('maxCount')?.value),
+        in: row.get('in')?.value,
+        canHavePlaceholder: false,
+        canHaveChoiceBinding: false,
+      };
+    });
+
+    // Sort fields by order
+    fields.sort((a, b) => a.order - b.order);
+
+    // Add options to Choice fields (in case of sh:in)
+    for (const field of fields) {
+      if (field.in) {
+        field.options = [];
+        field.isSelect = true;
+        const query = `
+          PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+          PREFIX owl: <http://www.w3.org/2002/07/owl#>
+          PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+          SELECT ?option ?label ?listSubject
+          WHERE {
+            <${field.in}> rdf:rest*/rdf:first ?option .
+            ?listSubject rdf:first ?option .
+            ?option a owl:Class .
+            OPTIONAL { ?option rdfs:label ?label . }
+          }`;
+
+        const bindings = await (
+          await this.engine.queryBindings(query, { sources: [uri], fetch })
+        ).toArray();
+
+        field.options = bindings.map((row) => {
+          return {
+            uuid: uuid(),
+            property: row.get('option').value,
+            label: row.get('label')?.value,
+            listSubject: row.get('listSubject').value,
+          };
+        });
+      }
+    }
+
+    this.formTargetClass = formTargetClass;
+    this.fields = fields;
+
+    return true;
+  }
+
+  async loadRdfFormForm(uri) {
+    const query = `
+    PREFIX form: <http://rdf.danielbeeke.nl/form/form-dev.ttl#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+    SELECT ?targetClass ?field ?type ?property ?label ?order ?required ?multiple ?placeholder
+    WHERE {
+      <${uri}> a form:Form;
+               form:binding ?targetClass .
+      ?field a form:Field;
+             form:widget ?type .
+      OPTIONAL { ?field form:binding ?property. }
+      OPTIONAL { ?field form:label ?label. }
+      OPTIONAL { ?field form:order ?order. }
+      OPTIONAL { ?field form:required ?required. }
+      OPTIONAL { ?field form:multiple ?multiple. }
+      OPTIONAL { ?field form:placeholder ?placeholder. }
+    }`;
+
+    const bindings = await (
+      await this.engine.queryBindings(query, { sources: [uri], fetch })
+    ).toArray();
+
+    if (!bindings.length) {
+      return false;
+    }
+
+    let formTargetClass;
+    const fields = bindings.map((row) => {
+      formTargetClass = row.get('targetClass').value;
+      return {
+        uuid: uuid(),
+        uri: row.get('field').value,
+        type: row.get('type').value,
+        widget: row.get('type').value,
+        property: row.get('property')?.value,
+        label: row.get('label')?.value,
+        order: parseInt(row.get('order')?.value),
+        required: row.get('required')?.value === 'true',
+        multiple: row.get('multiple')?.value === 'true',
+        placeholder: row.get('placeholder')?.value,
+        canHavePlaceholder:
+          row.get('type').value === 'string' ||
+          row.get('type').value === 'textarea',
+        canHaveChoiceBinding: false,
+      };
+    });
+
+    // Sort fields by order
+    fields.sort((a, b) => a.order - b.order);
+
+    // Add options to Choice fields (in case of type = "dropdown")
+    for (const field of fields) {
+      if (field.type === 'dropdown') {
+        field.options = [];
+        field.isSelect = true;
+        const query = `
+          PREFIX form: <http://rdf.danielbeeke.nl/form/form-dev.ttl#>
+          PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+          SELECT ?value ?label ?option ?options ?listSubject
+          WHERE {
+            <${field.uri}> form:option ?options .
+            ?options rdf:rest*/rdf:first ?option .
+            ?listSubject rdf:first ?option .
+            OPTIONAL { ?option form:value ?value . }
+            OPTIONAL { ?option form:label ?label . }
+          }
+          `;
+
+        const bindings = await (
+          await this.engine.queryBindings(query, { sources: [uri], fetch })
+        ).toArray();
+
+        field.options = bindings.map((row) => {
+          return {
+            uuid: uuid(),
+            property: row.get('value')?.value,
+            label: row.get('label')?.value,
+            uri: row.get('option').value,
+            listSubject: row.get('listSubject').value,
+          };
+        });
+      }
+    }
+
+    this.formTargetClass = formTargetClass;
+    this.fields = fields;
+
+    return true;
+  }
+
+  solidUiTypeToWidget(type) {
+    switch (type) {
+      case 'http://www.w3.org/ns/ui#SingleLineTextField':
+        return 'string';
+      case 'http://www.w3.org/ns/ui#MultiLineTextField':
+        return 'textarea';
+      case 'http://www.w3.org/ns/ui#Choice':
+        return 'dropdown';
+      case 'http://www.w3.org/ns/ui#BooleanField':
+        return 'checkbox';
+      case 'http://www.w3.org/ns/ui#DateField':
+        return 'date';
+    }
+  }
+
+  shaclTypeToWidget(type) {
+    switch (type) {
+      case 'http://www.w3.org/2001/XMLSchema#string':
+        return 'string';
+      case 'http://www.w3.org/ns/shacl#IRI':
+        return 'dropdown';
+      case 'http://www.w3.org/2001/XMLSchema#boolean':
+        return 'checkbox';
+      case 'http://www.w3.org/2001/XMLSchema#date':
+        return 'date';
+    }
+  }
+
+  async updateFields() {
+    const fields = this.fields;
+    this.fields = [];
+    return new Promise((resolve) =>
+      setTimeout(() => {
+        this.fields = fields;
+        resolve();
+      }, 0)
     );
   }
 
-  async fillInFormWithSubmitEventPolicy(matches) {
-    matches.prefixes = this.addIfNotIncluded(
-      matches.prefixes,
-      'ex',
-      'http://example.org/'
+  async updatePolicies() {
+    const policies = this.policies;
+    this.policies = [];
+    return new Promise((resolve) =>
+      setTimeout(() => {
+        this.policies = policies;
+        resolve();
+      }, 0)
     );
-    matches.prefixes = this.addIfNotIncluded(
-      matches.prefixes,
-      'fno',
-      'https://w3id.org/function/ontology#'
-    );
-    matches.prefixes = this.addIfNotIncluded(
-      matches.prefixes,
-      'pol',
-      'https://www.example.org/ns/policy#'
-    );
-
-    for (const rule of matches?.rules || []) {
-      const options = { blogic: false, outputType: 'string' };
-      const query = `${
-        matches.prefixes ? matches.prefixes.join('\n') : ''
-      }\n${rule}`;
-      const reasonerResult = await n3reasoner(
-        '_:id <http://example.org/event> <http://example.org/Submit> .',
-        query,
-        options
-      );
-
-      const queryPolicy = `
-      PREFIX ex: <http://example.org/>
-      PREFIX pol: <https://www.example.org/ns/policy#>
-      PREFIX fno: <https://w3id.org/function/ontology#>
-
-      SELECT ?executionTarget ?method ?url ?contentType WHERE {
-        ?id pol:policy ?policy .
-        ?policy a fno:Execution .
-        ?policy fno:executes ?executionTarget .
-        ?policy ex:url ?url .
-        OPTIONAL { ?policy ex:method ?method } .
-        OPTIONAL { ?policy ex:contentType ?contentType } .
-      }
-      `;
-      const bindings = await (
-        await this.engine.queryBindings(queryPolicy, {
-          sources: [
-            {
-              type: 'stringSource',
-              value: reasonerResult,
-              mediaType: 'text/n3',
-              baseIRI: new URL(this.loadedFormUri, await this.solidAuth.podBase)
-                .href,
-            },
-          ],
-        })
-      ).toArray();
-
-      const policies = bindings.map((row) => {
-        return {
-          executionTarget: row.get('executionTarget').value,
-          url: row.get('url').value,
-          method: row.get('method')?.value,
-          contentType: row.get('contentType')?.value,
-        };
-      });
-
-      for (const policy of policies) {
-        if (policy.executionTarget === 'http://example.org/httpRequest') {
-          this.policyType = 'HTTP';
-          this.policyURL = policy.url;
-          this.policyMethod = policy.method;
-          this.policyContentType = policy.contentType;
-        } else if (policy.executionTarget === 'http://example.org/redirect') {
-          this.policyRedirectUrl = policy.url;
-        }
-      }
-    }
   }
 
   addIfNotIncluded(prefixes, prefix, url) {
@@ -335,7 +579,7 @@ export default class IndexRoute extends Route {
       }
     });
     if (!alreadyIncluded) {
-      prefixes.push(`@prefix ${prefix}: <${url}> .`);
+      prefixes.push(`@prefix ${prefix}: <${url}>.`);
     }
     return prefixes;
   }

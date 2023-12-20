@@ -1,18 +1,42 @@
 {{page-title "Index"}}
-<a href="https://github.com/smessie/FormGenerator"><img loading="lazy" width="149" height="149" src="./forkme_right_gray.png" class="attachment-full size-full fork" alt="Fork me on GitHub" data-recalc-dims="1"></a>
+<a href="https://github.com/smessie/FormGenerator"><img loading="lazy" width="149" height="149"
+                                                        src="./forkme_right_gray.png"
+                                                        class="attachment-full size-full fork" alt="Fork me on GitHub"
+                                                        data-recalc-dims="1"></a>
 <div class="container margin-bottom">
   <div class="d-flex align-items-center margin-top">
     <h1>Form Generator</h1>
     <div class="d-flex ms-auto">
       <select class="form-select" aria-label="Vocabulary" {{on "change" this.changeVocabulary}}
-              disabled={{if this.fields true false}}>
-        <option value="http://www.w3.org/ns/shacl#" selected={{if this.isShaclVocabulary true false}}>SHACL</option>
-        <option value="http://rdf.danielbeeke.nl/form/form-dev.ttl#" selected={{if this.isRdfFormVocabulary true
-                                                                                   false}}>RDF-Form
+              disabled={{this.model.fields.length}}>
+        <option value="http://www.w3.org/ns/shacl#" selected={{this.isEqual this.model.vocabulary
+                                                                            "http://www.w3.org/ns/shacl#"}}>SHACL
         </option>
-        <option value="http://www.w3.org/ns/ui#" selected={{if this.isSolidUiVocabulary true false}}>Solid-UI</option>
+        <option value="http://rdf.danielbeeke.nl/form/form-dev.ttl#" selected={{this.isEqual this.model.vocabulary
+                                                                                             "http://rdf.danielbeeke.nl/form/form-dev.ttl#"}}>
+          RDF-Form
+        </option>
+        <option value="http://www.w3.org/ns/ui#" selected={{this.isEqual this.model.vocabulary
+                                                                         "http://www.w3.org/ns/ui#"}}>Solid-UI
+        </option>
       </select>
-      <button type="button" class="btn btn-outline-danger logout-btn" {{on "click" this.logout}}>Logout</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Authentication</h5>
+      {{#if this.solidAuth.loggedIn}}
+        <p class="card-text text-success">You are authenticated as {{this.solidAuth.loggedIn}}</p>
+        <button type="button" class="btn btn-outline-danger" {{on "click" this.logout}}>Logout</button>
+      {{else}}
+        <Input @type="text" class="form-control mb-3" id="oidc-issuer" placeholder="OIDC Issuer"
+               @value={{this.oidcIssuer}} />
+        {{#if this.authError }}
+          <small class="text-danger">{{ this.authError }}<br></small>
+        {{/if}}
+        <button type="button" class="btn btn-outline-success" {{on "click" this.login}}>Login</button>
+      {{/if}}
     </div>
   </div>
 
@@ -24,73 +48,112 @@
     </div>
     <small id="load" class="form-text text-muted">When loading a form resource, any changes will be discarded and the
       given URI will be loaded.</small>
-    <p class="text-warning"><strong>Beware!</strong> This is only a proof of concepts, not all field types by the vocabularies are supported.</p>
+    <p class="text-warning"><strong>Beware!</strong> This is only a proof of concepts, not all field types by the
+      vocabularies are supported.</p>
   </form>
 
-  {{#if this.success}}
+  {{#if this.model.success}}
     <div class="alert alert-success alert-dismissible margin-top">
-      {{this.success}}
+      {{this.model.success}}
       <button type="button" class="btn-close" aria-label="Close" {{on 'click' this.clearSuccess}}></button>
     </div>
   {{/if}}
-  {{#if this.error}}
+  {{#if this.model.error}}
     <div class="alert alert-danger alert-dismissible margin-top">
-      {{this.error}}
+      {{this.model.error}}
       <button type="button" class="btn-close" aria-label="Close" {{on 'click' this.clearError}}></button>
+    </div>
+  {{/if}}
+  {{#if this.model.info}}
+    <div class="alert alert-info alert-dismissible margin-top">
+      {{this.model.info}}
+      <button type="button" class="btn-close" aria-label="Close" {{on 'click' this.clearInfo}}></button>
     </div>
   {{/if}}
 
   <div class="row">
     <div class="col-md-4">
-      <div class="card sticky-top">
-        <div class="card-body">
-          <h5 class="card-title">
-            Available form fields
-          </h5>
-          <h6 class="card-subtitle mb-2 text-muted">Drag and drop them in your form on the right</h6>
-          <DraggableObject @content={{"string"}}>
-            <div class="card">
-              <div class="card-body">
-                <FaIcon @icon="font" />
-                Input String
-              </div>
-            </div>
-          </DraggableObject>
-          {{#if this.isShaclVocabulary }}
-          {{ else }}
-            <DraggableObject @content={{"textarea"}}>
+      <div class="sticky-top">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Available policies</h5>
+            <h6 class="card-subtitle mb-2 text-muted">Drag and drop them in your policies on the right</h6>
+            <DraggableObject @content={{"policy-http-request"}}>
               <div class="card">
                 <div class="card-body">
-                  <FaIcon @icon="text-height" />
-                  Textarea
+                  <FaIcon @icon="globe" />
+                  HTTP Request
                 </div>
               </div>
             </DraggableObject>
-          {{/if}}
-          <DraggableObject @content={{"dropdown"}}>
-            <div class="card">
-              <div class="card-body">
-                <FaIcon @icon="filter" />
-                Select Dropdown
+            <DraggableObject @content={{"policy-redirect"}}>
+              <div class="card">
+                <div class="card-body">
+                  <FaIcon @icon="external-link" />
+                  Redirect
+                </div>
               </div>
-            </div>
-          </DraggableObject>
-          <DraggableObject @content={{"date"}}>
-            <div class="card">
-              <div class="card-body">
-                <FaIcon @icon="calendar-alt" />
-                Date
+            </DraggableObject>
+            <DraggableObject @content={{"policy-n3-patch"}}>
+              <div class="card">
+                <div class="card-body">
+                  <FaIcon @icon="file-code" />
+                  N3 Patch
+                </div>
               </div>
-            </div>
-          </DraggableObject>
-          <DraggableObject @content={{"checkbox"}}>
-            <div class="card">
-              <div class="card-body">
-                <FaIcon @icon="check-circle" />
-                Checkbox
+            </DraggableObject>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">
+              Available form fields
+            </h5>
+            <h6 class="card-subtitle mb-2 text-muted">Drag and drop them in your form on the right</h6>
+            <DraggableObject @content={{"string"}}>
+              <div class="card">
+                <div class="card-body">
+                  <FaIcon @icon="font" />
+                  Input String
+                </div>
               </div>
-            </div>
-          </DraggableObject>
+            </DraggableObject>
+            {{#if (this.isEqual this.model.vocabulary "http://www.w3.org/ns/shacl#") }}
+            {{ else }}
+              <DraggableObject @content={{"textarea"}}>
+                <div class="card">
+                  <div class="card-body">
+                    <FaIcon @icon="text-height" />
+                    Textarea
+                  </div>
+                </div>
+              </DraggableObject>
+            {{/if}}
+            <DraggableObject @content={{"dropdown"}}>
+              <div class="card">
+                <div class="card-body">
+                  <FaIcon @icon="filter" />
+                  Select Dropdown
+                </div>
+              </div>
+            </DraggableObject>
+            <DraggableObject @content={{"date"}}>
+              <div class="card">
+                <div class="card-body">
+                  <FaIcon @icon="calendar-alt" />
+                  Date
+                </div>
+              </div>
+            </DraggableObject>
+            <DraggableObject @content={{"checkbox"}}>
+              <div class="card">
+                <div class="card-body">
+                  <FaIcon @icon="check-circle" />
+                  Checkbox
+                </div>
+              </div>
+            </DraggableObject>
+          </div>
         </div>
       </div>
     </div>
@@ -101,100 +164,112 @@
           <h6 class="card-subtitle mb-2 text-muted">Drag and drop the form fields in this area to reorder them</h6>
 
           <div class="mb-3 row">
-            <label for="binding-{{this.model.form.uuid}}" id="label-binding-{{this.model.form.uuid}}"
+            <label for="binding" id="label-binding"
                    class="col-sm-3 col-form-label">Binding</label>
             <div class="col-sm-9">
-              <input type="text" class="form-control" id="binding-{{this.model.form.uuid}}" placeholder="Binding"
-                     value={{this.model.form.binding.value}}
-                {{ on "change" (fn this.updateBinding this.model.form) }}
-                     aria-describedby="label-binding-{{this.model.form.uuid}}" />
-              {{#if this.model.form.error }}
-                <small class="text-danger">{{ this.model.form.error }}</small>
-              {{/if}}
-            </div>
-          </div>
-
-          <hr>
-          <h6 class="card-subtitle mb-2 text-muted">Fill in the details below about where the data should be stored when someone fill in the form and click submit.</h6>
-
-          <div class="mb-3 row">
-            <label for="policy-type-{{this.model.form.uuid}}" id="label-policy-type-{{this.model.form.uuid}}"
-                   class="col-sm-3 col-form-label">Policy Type</label>
-            <div class="col-sm-9">
-              <select class="form-select" id="policy-type-{{this.model.form.uuid}}"
-                      {{ on "change" this.updatePolicyType }}
-                      aria-describedby="label-policy-type-{{this.model.form.uuid}}">
-                <option value="HTTP" selected={{this.isEqual this.model.policyType "HTTP"}}>HTTP Request</option>
-              </select>
-              {{#if this.policyTypeError }}
-                <small class="text-danger">{{ this.policyTypeError }}</small>
-              {{/if}}
-            </div>
-          </div>
-
-          <div class="mb-3 row">
-            <label for="policy-url-{{this.model.form.uuid}}" id="label-policy-url-{{this.model.form.uuid}}"
-                   class="col-sm-3 col-form-label">Policy URL</label>
-            <div class="col-sm-9">
-              <input type="text" class="form-control" id="policy-url-{{this.model.form.uuid}}" placeholder="https://httpbin.org/post"
-                     value={{this.model.policyURL}} {{ on "change" this.updatePolicyURL }}
-                     aria-describedby="label-policy-url-{{this.model.form.uuid}}" />
-              {{#if this.policyURLError }}
-                <small class="text-danger">{{ this.policyURLError }}</small>
-              {{/if}}
-            </div>
-          </div>
-
-          <div class="mb-3 row">
-            <label for="policy-method-{{this.model.form.uuid}}" id="label-policy-method-{{this.model.form.uuid}}"
-                   class="col-sm-3 col-form-label">Policy HTTP Method</label>
-            <div class="col-sm-9">
-              <select class="form-select" id="policy-method-{{this.model.form.uuid}}"
-                      {{ on "change" this.updatePolicyMethod }}
-                      aria-describedby="label-policy-method-{{this.model.form.uuid}}">
-                <option value="POST" selected={{this.isEqual this.model.policyMethod "POST"}}>POST</option>
-                <option value="PUT" selected={{this.isEqual this.model.policyMethod "PUT"}}>PUT</option>
-                <option value="GET" selected={{this.isEqual this.model.policyMethod "GET"}}>GET</option>
-                <option value="PATCH" selected={{this.isEqual this.model.policyMethod "PATCH"}}>PATCH</option>
-                <option value="DELETE" selected={{this.isEqual this.model.policyMethod "DELETE"}}>DELETE</option>
-              </select>
-              {{#if this.policyMethodError }}
-                <small class="text-danger">{{ this.policyMethodError }}</small>
-              {{/if}}
-            </div>
-          </div>
-
-          <div class="mb-3 row">
-            <label for="policy-content-type-{{this.model.form.uuid}}" id="label-policy-content-type-{{this.model.form.uuid}}"
-                   class="col-sm-3 col-form-label">Policy Content-Type</label>
-            <div class="col-sm-9">
-              <input type="text" class="form-control" id="policy-content-type-{{this.model.form.uuid}}" placeholder="application/ld+json"
-                     value={{this.model.policyContentType}} {{ on "change" this.updatePolicyContentType }}
-                     aria-describedby="label-policy-content-type-{{this.model.form.uuid}}" />
-              {{#if this.policyContentTypeError }}
-                <small class="text-danger">{{ this.policyContentTypeError }}</small>
+              <Input @type="text" class="form-control" id="binding" placeholder="Binding"
+                     @value={{this.model.formTargetClass}} aria-describedby="label-binding"
+                {{ on "change" this.updateFormBinding }} />
+              {{#if this.model.formTargetClassError }}
+                <small class="text-danger">{{ this.model.formTargetClassError }}</small>
               {{/if}}
             </div>
           </div>
 
           <hr>
 
-          <h6 class="card-subtitle mb-2 text-muted">Fill in the URL to which the user should be sent after submitting the form.</h6>
-          <div class="mb-3 row">
-            <label for="policy-redirect-url-{{this.model.form.uuid}}" id="label-policy-redirect-url-{{this.model.form.uuid}}"
-                   class="col-sm-3 col-form-label">Policy Redirect URL</label>
-            <div class="col-sm-9">
-              <input type="text" class="form-control" id="policy-redirect-url-{{this.model.form.uuid}}" placeholder="https://formgenerator.smessie.com"
-                     value={{this.model.policyRedirectUrl}} {{ on "change" this.updatePolicyRedirectUrl }}
-                     aria-describedby="label-policy-redirect-url-{{this.model.form.uuid}}" />
+          {{#each this.model.policies as |policy|}}
+
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex align-items-center field-title">
+                  {{#if (this.isEqual policy.executionTarget "http://example.org/httpRequest") }}
+                    <h6 class="card-title">
+                      <FaIcon @icon="globe" />
+                      HTTP Request
+                    </h6>
+                  {{else if (this.isEqual policy.executionTarget "http://example.org/redirect") }}
+                    <h6 class="card-title">
+                      <FaIcon @icon="external-link" />
+                      Redirect
+                    </h6>
+                  {{else if (this.isEqual policy.executionTarget "http://example.org/n3Patch") }}
+                    <h6 class="card-title">
+                      <FaIcon @icon="file-code" />
+                      N3 Patch
+                    </h6>
+                  {{/if}}
+                  <div class="d-flex ms-auto">
+                    <button type="button" class="btn btn-outline-danger" {{on "click"
+                                                                              (fn this.removePolicy policy)}}>
+                      <FaIcon @icon="trash-can" />
+                    </button>
+                  </div>
+                </div>
+
+                <div class="mb-3 row">
+                  <label for="url-{{policy.uuid}}" id="label-url-{{policy.uuid}}"
+                         class="col-sm-3 col-form-label">URL</label>
+                  <div class="col-sm-9">
+                    <Input @type="text" class="form-control" id="url-{{policy.uuid}}"
+                           @value={{policy.url}} placeholder="https://httpbin.org/post"
+                           aria-describedby="label-policy-{{policy.uuid}}" />
+                    {{#if policy.urlError }}
+                      <small class="text-danger">{{ policy.urlError }}</small>
+                    {{/if}}
+                  </div>
+                </div>
+
+                {{#if (this.isEqual policy.executionTarget "http://example.org/httpRequest") }}
+                  <div class="mb-3 row">
+                    <label for="method-{{policy.uuid}}" id="label-method-{{policy.uuid}}"
+                           class="col-sm-3 col-form-label">HTTP Method</label>
+                    <div class="col-sm-9">
+                      <select class="form-select" id="method-{{policy.uuid}}"
+                        {{ on "change" (fn this.updatePolicyMethod policy) }}
+                              aria-describedby="label-method-{{policy.uuid}}">
+                        <option value="POST" selected={{this.isEqual policy.method "POST"}}>POST</option>
+                        <option value="PUT" selected={{this.isEqual policy.method "PUT"}}>PUT</option>
+                        <option value="GET" selected={{this.isEqual policy.method "GET"}}>GET</option>
+                        <option value="PATCH" selected={{this.isEqual policy.method "PATCH"}}>PATCH</option>
+                        <option value="DELETE" selected={{this.isEqual policy.method "DELETE"}}>DELETE</option>
+                      </select>
+                      {{#if policy.methodError }}
+                        <small class="text-danger">{{ policy.methodError }}</small>
+                      {{/if}}
+                    </div>
+                  </div>
+                  <div class="mb-3 row">
+                    <label for="content-type-{{policy.uuid}}" id="label-content-type-{{policy.uuid}}"
+                           class="col-sm-3 col-form-label">Content-Type</label>
+                    <div class="col-sm-9">
+                      <Input @type="text" class="form-control" id="content-type-{{policy.uuid}}"
+                             @value={{policy.contentType}} placeholder="application/ld+json"
+                             aria-describedby="label-content-type-{{policy.uuid}}" />
+                      {{#if policy.contentTypeError }}
+                        <small class="text-danger">{{ policy.contentTypeError }}</small>
+                      {{/if}}
+                    </div>
+                  </div>
+                {{/if}}
+              </div>
             </div>
-          </div>
+
+          {{/each}}
+
+          <DraggableObjectTarget @action={{this.addPolicy}} amount={{"5"}}>
+            <div class="card">
+              <div class="card-body">
+                Drag here to add policy
+              </div>
+            </div>
+          </DraggableObjectTarget>
 
           <hr>
 
-          <SortableObjects @sortableObjectList={{this.fields}} @enableSort={{true}} @useSwap={{false}}
+          <SortableObjects @sortableObjectList={{this.model.fields}} @enableSort={{true}} @useSwap={{false}}
                            @inPlace={{false}} @sortingScope={{"formFields"}}>
-            {{#each this.fields as |field|}}
+            {{#each this.model.fields as |field|}}
               <DraggableObject @content={{field}} @isSortable="{{true}}" @sortingScope={{"formFields"}}>
                 <div class="card" id="card-{{field.uuid}}">
                   <div class="card-body">
@@ -237,15 +312,15 @@
                       <div class="col-sm-9">
                         <Input @type="text" class="form-control" id="label-{{field.uuid}}" placeholder="Label"
                                @value={{field.label}}
-                               aria-describedby="label-label-{{this.field.uuid}}" />
+                               aria-describedby="label-label-{{field.uuid}}" />
                       </div>
                     </div>
                     <div class="mb-3 row">
                       <label for="binding-{{field.uuid}}" id="label-binding-{{field.uuid}}"
                              class="col-sm-3 col-form-label">Binding</label>
                       <div class="col-sm-9">
-                        <input type="text" class="form-control" id="binding-{{field.uuid}}" placeholder="Binding"
-                               value={{field.binding.value}}
+                        <Input @type="text" class="form-control" id="binding-{{field.uuid}}" placeholder="Binding"
+                               @value={{field.property}}
                           {{ on "change" (fn this.updateBinding field) }}
                                aria-describedby="label-binding-{{field.uuid}}" />
                         {{#if field.error }}
@@ -261,11 +336,11 @@
                           <Input @type="text" class="form-control" id="placeholder-{{field.uuid}}"
                                  placeholder="Placeholder"
                                  @value={{field.placeholder}}
-                                 aria-describedby="label-placeholder-{{this.field.uuid}}" />
+                                 aria-describedby="label-placeholder-{{field.uuid}}" />
                         </div>
                       </div>
                     {{/if}}
-                    {{#if this.isShaclVocabulary }}
+                    {{#if (this.isEqual this.model.vocabulary "http://www.w3.org/ns/shacl#") }}
                       <div class="input-group mb-3">
                         <span class="input-group-text" id="label-min-{{field.uuid}}">Min count</span>
                         <Input @type="integer" class="form-control" id="min-{{field.uuid}}" placeholder="Min count"
@@ -295,11 +370,11 @@
                           <div class="col-sm-9">
                             <input type="text" class="form-control" id="choice-binding-{{field.uuid}}"
                                    placeholder="Choice Binding"
-                                   value={{field.choice.uri.value}}
+                                   value={{field.choice}}
                               {{ on "change" (fn this.updateChoiceBinding field) }}
-                                   aria-describedby="choice-label-binding-{{this.field.uuid}}" />
-                            {{#if field.choice.error }}
-                              <small class="text-danger">{{ field.choice.error }}</small>
+                                   aria-describedby="choice-label-binding-{{field.uuid}}" />
+                            {{#if field.choiceError }}
+                              <small class="text-danger">{{ field.choiceError }}</small>
                             {{/if}}
                           </div>
                         </div>
@@ -312,8 +387,8 @@
                             <div class="input-group mt-3">
                               <Input @type="text" class="form-control" id="label-{{option.uuid}}" placeholder="Label"
                                      @value={{option.label}} aria-describedby="delete-{{option.uuid}}" />
-                              <input type="text" class="form-control" id="binding-{{option.uuid}}" placeholder="Binding"
-                                     value={{option.binding.value}} aria-describedby="delete-{{option.uuid}}" {{ on
+                              <Input @type="text" class="form-control" id="binding-{{option.uuid}}" placeholder="Binding"
+                                     @value={{option.property}} aria-describedby="delete-{{option.uuid}}" {{ on
                                 "change" (fn this.updateBinding option) }} />
                               <button class="btn btn-outline-danger" type="button" id="delete-{{option.uuid}}" {{ on
                                 "click" (fn this.removeOption field option) }}>
