@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function (environment) {
-  let ENV = {
+  const ENV = {
     modulePrefix: 'form-generator',
     environment,
     rootURL: environment === 'production' ? '/FormGenerator/' : '/',
@@ -12,6 +12,7 @@ module.exports = function (environment) {
     },
 
     EmberENV: {
+      EXTEND_PROTOTYPES: false,
       FEATURES: {
         // Here you can enable experimental features on an ember canary build
         // e.g. EMBER_NATIVE_DECORATOR_SUPPORT: true
