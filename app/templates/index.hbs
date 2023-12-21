@@ -183,17 +183,17 @@
             <div class="card">
               <div class="card-body">
                 <div class="d-flex align-items-center field-title">
-                  {{#if (this.isEqual policy.executionTarget "http://example.org/httpRequest") }}
+                  {{#if (this.isEqual policy.executionTarget "http://www.w3.org/2011/http#Request") }}
                     <h6 class="card-title">
                       <FaIcon @icon="globe" />
                       HTTP Request
                     </h6>
-                  {{else if (this.isEqual policy.executionTarget "http://example.org/redirect") }}
+                  {{else if (this.isEqual policy.executionTarget "https://w3id.org/DFDP/policy#Redirect") }}
                     <h6 class="card-title">
                       <FaIcon @icon="external-link" />
                       Redirect
                     </h6>
-                  {{else if (this.isEqual policy.executionTarget "http://example.org/n3Patch") }}
+                  {{else if (this.isEqual policy.executionTarget "http://www.w3.org/ns/solid/terms#InsertDeletePatch") }}
                     <h6 class="card-title">
                       <FaIcon @icon="file-code" />
                       N3 Patch
@@ -220,7 +220,7 @@
                   </div>
                 </div>
 
-                {{#if (this.isEqual policy.executionTarget "http://example.org/httpRequest") }}
+                {{#if (this.isEqual policy.executionTarget "http://www.w3.org/2011/http#Request") }}
                   <div class="mb-3 row">
                     <label for="method-{{policy.uuid}}" id="label-method-{{policy.uuid}}"
                            class="col-sm-3 col-form-label">HTTP Method</label>
@@ -387,7 +387,8 @@
                             <div class="input-group mt-3">
                               <Input @type="text" class="form-control" id="label-{{option.uuid}}" placeholder="Label"
                                      @value={{option.label}} aria-describedby="delete-{{option.uuid}}" />
-                              <Input @type="text" class="form-control" id="binding-{{option.uuid}}" placeholder="Binding"
+                              <Input @type="text" class="form-control" id="binding-{{option.uuid}}"
+                                     placeholder="Binding"
                                      @value={{option.property}} aria-describedby="delete-{{option.uuid}}" {{ on
                                 "change" (fn this.updateBinding option) }} />
                               <button class="btn btn-outline-danger" type="button" id="delete-{{option.uuid}}" {{ on

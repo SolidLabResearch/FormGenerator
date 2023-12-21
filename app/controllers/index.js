@@ -267,7 +267,12 @@ export default class IndexController extends Controller {
     matches.prefixes = this.model.addIfNotIncluded(
       matches.prefixes,
       'pol',
-      'https://www.example.org/ns/policy#',
+      'https://w3id.org/DFDP/policy#',
+    );
+    matches.prefixes = this.model.addIfNotIncluded(
+      matches.prefixes,
+      'http',
+      'http://www.w3.org/2011/http#',
     );
 
     // Re-add the N3 rules to the resource.
@@ -325,7 +330,7 @@ export default class IndexController extends Controller {
       }
       valid &= !policy.urlError;
 
-      if (policy.executionTarget === 'http://example.org/httpRequest') {
+      if (policy.executionTarget === 'http://www.w3.org/2011/http#Request') {
         if (
           !['GET', 'POST', 'PUT', 'DELETE', 'PATCH'].includes(policy.method)
         ) {
@@ -565,15 +570,16 @@ export default class IndexController extends Controller {
     if (type && type.startsWith('policy-')) {
       let policy = { uuid: uuid(), url: '' };
       if (type === 'policy-redirect') {
-        policy.executionTarget = 'http://example.org/redirect';
+        policy.executionTarget = 'https://w3id.org/DFDP/policy#Redirect';
       } else if (type === 'policy-n3-patch') {
-        policy.executionTarget = 'http://example.org/n3Patch';
+        policy.executionTarget =
+          'http://www.w3.org/ns/solid/terms#InsertDeletePatch';
       } else if (type === 'policy-http-request') {
         policy = {
           ...policy,
           method: 'POST',
           contentType: '',
-          executionTarget: 'http://example.org/httpRequest',
+          executionTarget: 'http://www.w3.org/2011/http#Request',
         };
       }
       this.model.policies = [...this.model.policies, policy];
@@ -883,18 +889,20 @@ export default class IndexController extends Controller {
       // Add basic properties and N3 rule syntax equal for all policy types.
       let data = `
 {
-  <${this.model.loadedFormUri}> ex:event ex:Submit.
+  <${this.model.loadedFormUri}> pol:event pol:Submit.
 } => {
   ex:HttpPolicy pol:policy [
     a fno:Execution ;
     fno:executes <${policy.executionTarget}> ;
-    ex:url <${policy.url}>`;
+    http:requestURI <${policy.url}>`;
 
       // If the policy is a HTTP request, add the method and content type.
-      if (policy.executionTarget === 'http://example.org/httpRequest') {
+      if (policy.executionTarget === 'http://www.w3.org/2011/http#Request') {
         data += ` ;
-    ex:method "${policy.method}" ;
-    ex:contentType "${policy.contentType}"`;
+    http:methodName "${policy.method}" ;
+    http:headers (
+      [ http:fieldName "Content-Type" ; http:fieldValue "${policy.contentType}" ]
+    )`;
       }
 
       // Finish the policy syntax.

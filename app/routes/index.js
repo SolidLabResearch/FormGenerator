@@ -99,7 +99,7 @@ export default class IndexRoute extends Route {
     // Get policies from footprint tasks.
     const options = { outputType: 'string' };
     const reasonerResult = await n3reasoner(
-      `<${formUri}> <http://example.org/event> <http://example.org/Submit> .`,
+      `<${formUri}> <https://w3id.org/DFDP/policy#event> <https://w3id.org/DFDP/policy#Submit> .`,
       content,
       options,
     );
@@ -107,16 +107,17 @@ export default class IndexRoute extends Route {
     // Parse policies.
     const queryPolicy = `
       PREFIX ex: <http://example.org/>
-      PREFIX pol: <https://www.example.org/ns/policy#>
+      PREFIX pol: <https://w3id.org/DFDP/policy#>
       PREFIX fno: <https://w3id.org/function/ontology#>
+      PREFIX http: <http://www.w3.org/2011/http#>
 
       SELECT ?executionTarget ?method ?url ?contentType WHERE {
         ?id pol:policy ?policy .
         ?policy a fno:Execution .
         ?policy fno:executes ?executionTarget .
-        ?policy ex:url ?url .
-        OPTIONAL { ?policy ex:method ?method } .
-        OPTIONAL { ?policy ex:contentType ?contentType } .
+        ?policy http:requestURI ?url .
+        OPTIONAL { ?policy http:methodName ?method } .
+        OPTIONAL { ?policy http:headers ( [ http:fieldName "Content-Type" ; http:fieldValue ?contentType ] ) } .
       }
       `;
     const bindings = await (
@@ -125,7 +126,7 @@ export default class IndexRoute extends Route {
           {
             type: 'stringSource',
             value: reasonerResult,
-            mediaType: 'text/n3',
+            mediaType: 'text/turtle',
             baseIRI: formUri.split('#')[0],
           },
         ],
