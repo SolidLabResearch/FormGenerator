@@ -98,9 +98,8 @@ export default class IndexRoute extends Route {
 
     // Get policies from footprint tasks.
     const options = { outputType: 'string' };
-    // TODO: We should replace ?id with the actual form URI.
     const reasonerResult = await n3reasoner(
-      `?id <http://example.org/event> <http://example.org/Submit> .`,
+      `<${formUri}> <http://example.org/event> <http://example.org/Submit> .`,
       content,
       options,
     );

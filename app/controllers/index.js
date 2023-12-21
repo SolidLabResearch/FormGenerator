@@ -547,9 +547,8 @@ export default class IndexController extends Controller {
   async isEventSubmitRule(rule, prefixes) {
     const options = { outputType: 'string' };
     const query = `${prefixes ? prefixes.join('\n') : ''}\n${rule}`;
-    // TODO: We should replace ?id with the actual form URI.
     const reasonerResult = await n3reasoner(
-      '?id <http://example.org/event> <http://example.org/Submit> .',
+      `<${this.model.loadedFormUri}> <http://example.org/event> <http://example.org/Submit> .`,
       query,
       options,
     );
