@@ -553,7 +553,7 @@ export default class IndexController extends Controller {
     const options = { outputType: 'string' };
     const query = `${prefixes ? prefixes.join('\n') : ''}\n${rule}`;
     const reasonerResult = await n3reasoner(
-      `<${this.model.loadedFormUri}> <http://example.org/event> <http://example.org/Submit> .`,
+      `<${this.model.loadedFormUri}> <https://w3id.org/DFDP/policy#event> <https://w3id.org/DFDP/policy#Submit> .`,
       query,
       options,
     );
